@@ -1,0 +1,166 @@
+* {
+    font-family: 'Roboto', monospace;
+    color: white;
+    box-sizing: border-box;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+h1, h2, h3, h4, h5 {
+    margin: 0;
+    padding: 5px;
+    padding-bottom: 20px;
+}
+
+body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #212d38;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 50px);
+    border: none;
+    outline: none;
+}
+
+#canvas:focus {
+    outline: none;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #212d38;
+    color: #fff;
+    text-align: center;
+    line-height: 50px;
+}
+
+button {
+    background-color: #2d4052;
+    color: #fff;
+    border: 0;
+    padding: 5px 10px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size:20px;
+    transition: all 0.1s ease-in-out;
+}
+
+button:hover {
+    background-color: #3d5468;
+}
+
+button:active {
+    background-color: #2d4052;
+}
+
+select {
+    background-color: #2d4052;
+    color: #fff;
+    border: 0;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size:20px;
+    transition: all 0.1s ease-in-out;
+}
+
+select:hover {
+    background-color: #3d5468;
+}
+
+select:active {
+    background-color: #2d4052;
+}
+
+option {
+    background-color: #2d4052;
+    color: #fff;
+    border: 0;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size:20px;
+    transition: all 0.1s ease-in-out;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: #212d38;
+    border-radius: 5px;
+    padding: 10px;
+    padding-bottom: 20px;
+    z-index: 2;
+}
+
+#truth-table{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #212d38;
+    padding: 10px;
+    padding-bottom: 20px;
+    z-index: 2;
+    font-size: 20px;
+    padding: 10px;
+}
+
+#truth-table table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0;
+}
+
+#truth-table th {
+    background-color: #2d4052;
+    margin: 0;
+}
+
+#truth-table td {
+    background-color: #3d5468;
+    text-align: center;
+    padding: 10px;
+    margin: 0;
+}
+
+.tt-0 {
+    background-color: #841616 !important;
+}
+
+.tt-1 {
+    background-color: #1f921f !important;
+}
