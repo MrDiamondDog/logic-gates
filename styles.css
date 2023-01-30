@@ -164,3 +164,14 @@ option {
 .tt-1 {
     background-color: #1f921f !important;
 }
+
+#github-img {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    z-index: 3;
+}
