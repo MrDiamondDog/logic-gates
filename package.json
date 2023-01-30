@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "tsc -w",
-    "build": "tsc"
+    "build": "npm i && tsc"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^4.9.4"
+  }
 }
