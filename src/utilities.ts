@@ -11,8 +11,12 @@ class Utils {
     static highlightColor = '#2d5b8a';
     static selectColor = 'rgba(4, 122, 239, 0.25)'
     static textColor = '#ffffff';
+    static footerTextColor = '#909090';
 
     static nodes: Node[] = [];
+    static inputs: Node[] = [];
+    static outputs: Node[] = [];
+
     static selectedNode: Node | undefined = undefined;
     static selectedNodes: Node[] = [];
     static selectingMultiple = false;

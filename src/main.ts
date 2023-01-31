@@ -32,41 +32,47 @@ function Update() {
         ctx.fillStyle = Utils.selectColor;
         ctx.fillRect(Utils.mouse.dragStart.x, Utils.mouse.dragStart.y, Utils.mouse.x - Utils.mouse.dragStart.x, Utils.mouse.y - Utils.mouse.dragStart.y);
     }
+
+    Utils.inputs = [];
+    Utils.outputs = [];
+    ctx.font = "15px monospace";
+    ctx.fillStyle = Utils.footerTextColor;
+    for (let i = 0; i < Utils.nodes.length; i++) {
+        const node = Utils.nodes[i];
+        if (node.title == "Input") {
+            ctx.fillText(Utils.letters[Utils.inputs.length], node.x + node.width / 2 - Utils.getTextWidth(ctx, Utils.letters[Utils.inputs.length]) / 2, node.y + node.height - 7);
+            Utils.inputs.push(node);
+        }
+        else if (node.title == "Output") {
+            ctx.fillText(Utils.letters[Utils.outputs.length + 16], node.x + node.width / 2 - Utils.getTextWidth(ctx, Utils.letters[Utils.outputs.length + 16]) / 2, node.y + node.height - 7);
+            Utils.outputs.push(node);
+        }
+    } 
 }
 Update();
 
 function GenerateTruthTable(){
-    const inputs : Node[] = [];
-    const outputs : Node[] = [];
-    for (let i = 0; i < Utils.nodes.length; i++) {
-        const node = Utils.nodes[i];
-        if (node.title == "Input") {
-            inputs.push(node);
-        }
-        else if (node.title == "Output") {
-            outputs.push(node);
-        }
-    }
-
-    console.log("Inputs", inputs.length, "Outputs", outputs.length)
-
     const truthTable : boolean[][] = [];
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].widgets[0].off();
+    for (let i = 0; i < Utils.inputs.length; i++) {
+        Utils.inputs[i].widgets[0].off();
     }
 
     for (let i = 0; i < Utils.nodes.length; i++) {
         const node = Utils.nodes[i];
         node.update();
     }
+    for (let i = 0; i < Utils.nodes.length; i++) {
+        const node = Utils.nodes[i];
+        node.update();
+    }
 
     // go through all combinations of inputs on/off and get the outputs
-    for (let i = 0; i < Math.pow(2, inputs.length); i++) {
+    for (let i = 0; i < Math.pow(2, Utils.inputs.length); i++) {
         const row : boolean[] = [];
         
         // set the inputs, powered or not
-        for (let j = 0; j < inputs.length; j++) {
-            const input = inputs[j];
+        for (let j = 0; j < Utils.inputs.length; j++) {
+            const input = Utils.inputs[j];
             const powered = (i & (1 << j)) != 0;
             if (powered) input.widgets[0].on();
             else input.widgets[0].off();
@@ -82,13 +88,13 @@ function GenerateTruthTable(){
             node.update();
         }
 
-        for (let j = 0; j < inputs.length; j++) {
-            const input = inputs[j];
+        for (let j = 0; j < Utils.inputs.length; j++) {
+            const input = Utils.inputs[j];
             row.push(input.widgets[0].powered);
         }
 
-        for (let j = 0; j < outputs.length; j++) {
-            const output = outputs[j];
+        for (let j = 0; j < Utils.outputs.length; j++) {
+            const output = Utils.outputs[j];
             row.push(output.inputs[0].powered);
         }
 
@@ -99,12 +105,12 @@ function GenerateTruthTable(){
     outputTable.innerHTML = "";
 
     const header = document.createElement("tr");
-    for (let i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < Utils.inputs.length; i++) {
         const td = document.createElement("td");
         td.innerText = Utils.letters[i];
         header.appendChild(td);
     }
-    for (let i = 0; i < outputs.length; i++) {
+    for (let i = 0; i < Utils.outputs.length; i++) {
         const td = document.createElement("td");
         td.innerText = Utils.letters[i + 16];
         header.appendChild(td);
@@ -122,7 +128,13 @@ function GenerateTruthTable(){
         }
         outputTable.appendChild(tr);
     }
+
+    outputTable.style.display = "block";
+    hidett.innerHTML = "Hide Truth Table";
 }
+
+
+
 
 canvas.addEventListener('mousemove', function (e) {
     Utils.mouse.x = e.clientX;
@@ -134,7 +146,7 @@ canvas.addEventListener('mousemove', function (e) {
 
     Utils.mouse.hoveringInput = undefined;
     Utils.mouse.hoveringOutput = undefined;
-    for (let i = 0; i < Utils.nodes.length; i++) {
+    for (let i = 0; i < Utils.nodes.length; i++) { 
         const node = Utils.nodes[i];
         for (let j = 0; j < node.inputs.length; j++) {
             const input = node.inputs[j];
@@ -177,8 +189,6 @@ canvas.addEventListener('mousedown', function (e) {
             if (node.contains(Utils.mouse.x, Utils.mouse.y)) {
                 Utils.selectedNode = node;
                 node.selected = true;
-                Utils.nodes.splice(i, 1);
-                Utils.nodes.unshift(node);
                 break;
             }
         }
@@ -218,6 +228,9 @@ canvas.addEventListener('keydown', function (e) {
 });
 
 
+
+
+
 window.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
@@ -225,6 +238,10 @@ window.onresize = function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
+
+
+
+
 
 const nodeSelect = document.getElementById("footer") as HTMLDivElement;
 for (let i = 0; i < Utils.prebuiltNodes.length; i++) {
@@ -242,8 +259,10 @@ generate.addEventListener('click', function (e) {
 });
 
 const hidett = document.getElementById("hide-tt") as HTMLButtonElement;
+const truthTable = document.getElementById("truth-table") as HTMLTableElement;
 hidett.addEventListener('click', function (e) {
-    const truthTable = document.getElementById("truth-table") as HTMLDivElement;
     truthTable.style.display = truthTable.style.display == "none" ? "block" : "none";
     this.innerHTML = truthTable.style.display == "none" ? "Show Truth Table" : "Hide Truth Table";
 });
+truthTable.style.display = "block";
+hidett.innerHTML = "Hide Truth Table";

@@ -9,5 +9,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "moduleResolution": "node",
-  }
+    "allowJs": true,
+  },
+  "exclude": ["*.ex.*", "dist/*"]
 }

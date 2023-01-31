@@ -12,9 +12,11 @@
     <img id="github-img" src="git.png" alt="github logo" onclick="window.location.href='https://github.com/MrDiamondDog/logic-gates'">
     <footer id="footer">
         <button id="generate">Truth Table</button>
-        <button id="hide-tt">Show Truth Table</button>
     </footer>
-    <table id="truth-table"></table>
+    <div id="tt-container">
+        <button id="hide-tt" class="button-sm">Hide Truth Table</button>
+        <table id="truth-table"></table>
+    </div>
     <script>var exports = {};</script> <!-- thanks, typescript -->
     <script src="dist/main.js" type="module"></script>
 </body>

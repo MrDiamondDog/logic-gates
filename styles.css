@@ -70,6 +70,18 @@ button:active {
     background-color: #2d4052;
 }
 
+.button-sm {
+    background-color: #2d4052;
+    color: #fff;
+    border: 0;
+    padding: 5px 10px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size:20px;
+    transition: all 0.1s ease-in-out;
+    font-size:14px;
+}
+
 select {
     background-color: #2d4052;
     color: #fff;
@@ -125,16 +137,24 @@ option {
     z-index: 2;
 }
 
-#truth-table{
-    position: absolute;
+#tt-container {
+    display:block;
     bottom: 0;
     right: 0;
-    background-color: #212d38;
-    padding: 10px;
-    padding-bottom: 20px;
-    z-index: 2;
+    padding: 6px;
+    padding-bottom:20px;
+    z-index:2;
     font-size: 20px;
-    padding: 10px;
+}
+
+#hide-tt, #copy-tt {
+    position:relative;
+}
+
+#truth-table {
+    background-color: #212d38;
+    position: absolute;
+    z-index: 3;
 }
 
 #truth-table table {
@@ -153,7 +173,7 @@ option {
 #truth-table td {
     background-color: #3d5468;
     text-align: center;
-    padding: 10px;
+    padding: 3px;
     margin: 0;
 }
 
