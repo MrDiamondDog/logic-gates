@@ -14,6 +14,7 @@ jobs:
         with:
           overwrite: true
           directory: 'js'
+          js_engine: 'uglify-js'
 
       # Auto commits minified files to the repository
       # Ignore it if you don't want to commit the files to the repository 
