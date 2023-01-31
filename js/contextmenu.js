@@ -1,1 +1,38 @@
-class ContextMenu{constructor(t,e,n,c){this.ctx=t,this.x=e,this.y=n,this.items=c}update(){}draw(){null!=(t=document.getElementById("context"))&&t.remove();var t,e=document.createElement("div");e.id="context",e.style.left=this.x+"px",e.style.top=this.y+"px";for(let t=0;t<this.items.length;t++){const c=this.items[t];var n=document.createElement("button");n.innerText=c.text,n.onclick=()=>{var t;c.click(),null!=(t=document.getElementById("context"))&&t.remove()},e.appendChild(n)}document.body.appendChild(e)}}class ContextMenuItem{constructor(t,e){this.text=t,this.callback=e}click(){this.callback()}}export{ContextMenu,ContextMenuItem};
+export class ContextMenu {
+  constructor(ctx, x, y, items) {
+    this.ctx = ctx;
+    this.x = x;
+    this.y = y;
+    this.items = items;
+  }
+  update() {}
+  draw() {
+    var _a;
+    (_a = document.getElementById("context")) === null || _a === void 0 ? void 0 : _a.remove();
+    const context = document.createElement("div");
+    context.id = "context";
+    context.style.left = this.x + "px";
+    context.style.top = this.y + "px";
+    for (let i = 0; i < this.items.length; i++) {
+      const item = this.items[i];
+      const button = document.createElement("button");
+      button.innerText = item.text;
+      button.onclick = () => {
+        var _a;
+        item.click();
+        (_a = document.getElementById("context")) === null || _a === void 0 ? void 0 : _a.remove();
+      };
+      context.appendChild(button);
+    }
+    document.body.appendChild(context);
+  }
+}
+export class ContextMenuItem {
+  constructor(text, callback) {
+    this.text = text;
+    this.callback = callback;
+  }
+  click() {
+    this.callback();
+  }
+}
