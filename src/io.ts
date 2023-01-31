@@ -25,6 +25,10 @@ class IO {
     }
 
     checkPower() {
+        for (let i = 0; i < this.connections.length; i++) {
+            this.connections[i].powered = this.powered;
+        }
+
         if (this.isOutput) return;
         else {
             this.powered = false;
@@ -48,7 +52,6 @@ class IO {
 
         for (let i = 0; i < this.connections.length; i++) {
             Utils.bezierLine(ctx, this.connections[i].x, this.connections[i].y, this.x, this.y, Utils.powerColor(this.powered));
-            this.connections[i].powered = this.powered;
         }
     }
 

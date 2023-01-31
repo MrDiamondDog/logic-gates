@@ -12,9 +12,7 @@ export class Widget {
         this.x = this.parentIO.x + (this.isOutput ? -20 : 20);
         this.y = this.parentIO.y;
     }
-    click() { }
-    on() { }
-    off() { }
+    setPowered(powered) { }
 }
 export class ButtonWidget extends Widget {
     draw() {
@@ -22,16 +20,8 @@ export class ButtonWidget extends Widget {
         this.ctx.fillStyle = Utils.powerColor(this.powered);
         Utils.circle(this.ctx, this.x, this.y, 8, Utils.powerColor(this.powered));
     }
-    click() {
-        this.powered = !this.powered;
-        this.parentIO.powered = this.powered;
-    }
-    on() {
-        this.powered = true;
-        this.parentIO.powered = this.powered;
-    }
-    off() {
-        this.powered = false;
+    setPowered(powered) {
+        this.powered = powered;
         this.parentIO.powered = this.powered;
     }
 }

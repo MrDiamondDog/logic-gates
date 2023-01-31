@@ -8,7 +8,7 @@ class Tooltip {
     }
 
     draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
-        const height = Utils.getTextHeight(ctx, this.text) + 5;
+        const height = Utils.getTextHeight(ctx, this.text) + 20;
 
         ctx.font = '20px monospace';
         ctx.fillStyle = Utils.accentColor2;

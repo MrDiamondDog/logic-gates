@@ -46,8 +46,7 @@ class Utils {
         ctx.bezierCurveTo(x1 - 50, y1, x2 + 50, y2, x2, y2);
         ctx.stroke();
     }
-    static CreateNode(ctx, name) {
-        // find a position by adding to x and y until it doesn't intersect with any other nodes
+    static GetEmptySpace(ctx) {
         let x = 100;
         let y = 100;
         let intersects = true;
@@ -57,20 +56,43 @@ class Utils {
                 let node = this.nodes[i];
                 if (this.rectIntersectsRect(x, y, 200, 200, node.x, node.y, node.width, node.height)) {
                     intersects = true;
-                    x += 50;
-                    if (x > ctx.canvas.width - 200) {
-                        x = 100;
-                        y += 50;
+                    y += 50;
+                    if (y > ctx.canvas.height - 100) {
+                        y = 100;
+                        x += 50;
                     }
                     break;
                 }
             }
         }
+        return { x, y };
+    }
+    static CreateCustomNode(ctx, name) {
+        let { x, y } = this.GetEmptySpace(ctx);
+        let cache = this.nodes;
+        this.nodes = [];
+        this.nodes.push(new Node(ctx, {
+            title: name,
+            inputs: this.inputs.map((input) => input.id),
+            outputs: this.outputs.map((output) => output.id),
+            x: x,
+            y: y,
+            tooltip: "A custom node.",
+            isCustom: true,
+            customNodes: cache
+        }));
+        console.log(this.nodes);
+    }
+    static CreateNode(ctx, name, x = undefined, y = undefined) {
+        if (!x || !y) {
+            x = this.GetEmptySpace(ctx).x;
+            y = this.GetEmptySpace(ctx).y;
+        }
+        let id = this.letters[(name == "input") ? this.inputs.length : (name == "output") ? this.outputs.length + 13 : 26];
         switch (name) {
             case "Random":
-                // set the name to something else from the list
                 name = this.prebuiltNodes[Math.floor(Math.random() * this.prebuiltNodes.length)];
-                this.CreateNode(ctx, name);
+                this.CreateNode(ctx, name, x, y);
                 break;
             case "or":
                 this.nodes.push(new Node(ctx, {
@@ -79,7 +101,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if either input is true."
+                    tooltip: "Outputs true if either input is true.",
+                    id: id
                 }, (inputs) => {
                     return [inputs[0].powered || inputs[1].powered];
                 }));
@@ -91,7 +114,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are true."
+                    tooltip: "Outputs true if both inputs are true.",
+                    id: id
                 }, (inputs) => {
                     return [inputs[0].powered && inputs[1].powered];
                 }));
@@ -103,7 +127,8 @@ class Utils {
                     outputs: ["B"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if the input is false."
+                    tooltip: "Outputs true if the input is false.",
+                    id: id
                 }, (inputs) => {
                     return [!inputs[0].powered];
                 }));
@@ -120,7 +145,8 @@ class Utils {
                     x: x,
                     y: y,
                     tooltip: "Outputs true if the input is true.",
-                    widgetOptions: [{ type: "button", parentIOName: "A" }]
+                    widgetOptions: [{ type: "button", parentIOName: "A" }],
+                    id: id
                 }, (inputs, widgets) => {
                     return [widgets[0].powered];
                 }));
@@ -136,7 +162,8 @@ class Utils {
                     outputs: [],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if the input is true."
+                    tooltip: "Outputs true if the input is true.",
+                    id: id
                 }, (inputs) => {
                     return [];
                 }));
@@ -148,7 +175,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if one input is true and the other is false."
+                    tooltip: "Outputs true if one input is true and the other is false.",
+                    id: id
                 }, (inputs) => {
                     return [inputs[0].powered != inputs[1].powered];
                 }));
@@ -160,7 +188,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are false."
+                    tooltip: "Outputs true if both inputs are false.",
+                    id: id
                 }, (inputs) => {
                     return [!(inputs[0].powered && inputs[1].powered)];
                 }));
@@ -172,7 +201,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are false."
+                    tooltip: "Outputs true if both inputs are false.",
+                    id: id
                 }, (inputs) => {
                     return [!(inputs[0].powered || inputs[1].powered)];
                 }));
@@ -184,7 +214,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are the same."
+                    tooltip: "Outputs true if both inputs are the same.",
+                    id: id
                 }, (inputs) => {
                     return [inputs[0].powered == inputs[1].powered];
                 }));
@@ -197,7 +228,7 @@ class Utils {
         });
     }
 }
-Utils.letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+Utils.letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 Utils.backgroundColor = '#212d38';
 Utils.accentColor = '#2f3e4e';
 Utils.accentColor2 = '#3f4e5e';
@@ -208,6 +239,7 @@ Utils.footerTextColor = '#909090';
 Utils.nodes = [];
 Utils.inputs = [];
 Utils.outputs = [];
+Utils.contextMenu = undefined;
 Utils.selectedNode = undefined;
 Utils.selectedNodes = [];
 Utils.selectingMultiple = false;

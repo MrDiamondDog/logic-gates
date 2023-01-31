@@ -9,7 +9,7 @@ class Node {
     inputs: IO[];
     outputs: IO[];
     settings: NodeSettings;
-    predicate: (inputs: IO[], widgets: Widget[]) => boolean[];
+    predicate: undefined | ((inputs: IO[], widgets: Widget[]) => boolean[]);
     x: number;
     y: number;
     width: number;
@@ -18,8 +18,11 @@ class Node {
     selected: boolean = false;
     widgetOptions: NodeWidget[] = [];
     widgets: Widget[] = [];
+    isCustom = false;
+    customNodes: Node[] | [] = [];
+    id: string | undefined;
 
-    constructor(ctx: CanvasRenderingContext2D, settings: NodeSettings, predicate: (inputs: IO[], widgets: Widget[]) => boolean[]) {
+    constructor(ctx: CanvasRenderingContext2D, settings: NodeSettings, predicate: undefined | ((inputs: IO[], widgets: Widget[]) => boolean[]) = undefined) {
         this.ctx = ctx;
         this.settings = settings;
         this.title = settings.title;
@@ -35,11 +38,14 @@ class Node {
         else {
             this.outputs = settings.outputs.map((output, i) => new IO(output as string, true, i, this));
         }
-        this.predicate = predicate;
+        this.isCustom = settings.isCustom || settings.customNodes !== undefined;
+        this.customNodes = settings.customNodes || [];
+        this.predicate = predicate || undefined;
         this.x = settings.x;
         this.y = settings.y;
         this.tooltip = settings.tooltip;
         this.widgetOptions = settings.widgetOptions || [];
+        this.id = settings.id || undefined;
 
         this.ctx.font = '30px monospace';
         this.width = Utils.getTextWidth(this.ctx, this.title) + 20;
@@ -85,85 +91,131 @@ class Node {
         for (let i = 0; i < this.widgets.length; i++) {
             this.widgets[i].draw();
         }
+
+        this.ctx.font = "15px monospace";
+        this.ctx.fillStyle = Utils.footerTextColor;
+        if (this.id) this.ctx.fillText(this.id, this.x + this.width / 2 - Utils.getTextWidth(this.ctx, this.id) / 2, this.y + this.height - 7);
     }
 
-    update() {
-        const result = this.predicate(this.inputs, this.widgets);
+    update(notCustom = true) {
+        if (this.predicate) {
+            const result = this.predicate(this.inputs, this.widgets) as boolean[];
 
-        for (let i = 0; i < this.outputs.length; i++) {
-            this.outputs[i].powered = result[i];
-            this.outputs[i].update();
+            for (let i = 0; i < this.outputs.length; i++) {
+                this.outputs[i].powered = result[i];
+                this.outputs[i].update();
+            }
+
+            for (let i = 0; i < this.inputs.length; i++) {
+                this.inputs[i].update();
+            }
+        }
+
+        if (this.isCustom) {
+            let innerInputs = [];
+            let innerOutputs = [];
+
+            for (let i = 0; i < this.customNodes.length; i++) {
+                if (this.customNodes[i].title == "Input") {
+                    innerInputs.push(this.customNodes[i]);
+                }
+                else if (this.customNodes[i].title == "Output") {
+                    innerOutputs.push(this.customNodes[i]);
+                }
+            }
+
+            for (let i = 0; i < this.inputs.length; i++) {
+                innerInputs[i].widgets[0].setPowered(this.inputs[i].powered);
+            }
+
+            for (let i = 0; i < this.customNodes.length; i++) {
+                this.customNodes[i].update(false);
+            }
+
+            for (let i = 0; i < this.outputs.length; i++) {
+                this.outputs[i].powered = innerOutputs[i].inputs[0].powered;
+            }
+
+            // make sure nested custom nodes are updated
+            for (let i = 0; i < this.customNodes.length; i++) {
+                this.customNodes[i].update(false);
+            }
         }
 
         for (let i = 0; i < this.inputs.length; i++) {
             this.inputs[i].update();
         }
 
-        this.draw();
+        for (let i = 0; i < this.outputs.length; i++) {
+            this.outputs[i].update();
+        }
 
-        const hoveringNode = Utils.rectContainsPoint(Utils.mouse.x, Utils.mouse.y, this.x, this.y, this.width, this.height);
+        if (notCustom) {
+            this.draw();
 
-        // Widget logic
-        if (!Utils.mouse.draggingNode && !Utils.mouse.draggingIO) {
-            for (var i = 0; i < this.widgets.length; i++) {
-                if (this.widgets[i] instanceof ButtonWidget) {
-                    if (Utils.circleContainsPoint(Utils.mouse.x, Utils.mouse.y, this.widgets[i].x, this.widgets[i].y, 8) && Utils.mouse.clicking) {
-                        this.widgets[i].click();
+            const hoveringNode = Utils.rectContainsPoint(Utils.mouse.x, Utils.mouse.y, this.x, this.y, this.width, this.height);
+
+            // Widget logic
+            if (!Utils.mouse.draggingNode && !Utils.mouse.draggingIO) {
+                for (var i = 0; i < this.widgets.length; i++) {
+                    if (this.widgets[i] instanceof ButtonWidget) {
+                        if (Utils.circleContainsPoint(Utils.mouse.x, Utils.mouse.y, this.widgets[i].x, this.widgets[i].y, 8) && Utils.mouse.clicking) {
+                            this.widgets[i].setPowered(!this.widgets[i].powered);
+                        }
                     }
                 }
             }
-        }
 
-        // Check if the user is hovering over an input or output
-        if (!Utils.mouse.draggingNode) {
-            // Draw a tooltip
-            let tooltip: Tooltip | undefined;
-            if (Utils.mouse.hoveringInput) {
-                tooltip = new Tooltip(Utils.mouse.hoveringInput.name);
-            }
-            else if (Utils.mouse.hoveringOutput) {
-                tooltip = new Tooltip(Utils.mouse.hoveringOutput.name);
-            }
-            else if (this.tooltip && hoveringNode) {
-                tooltip = new Tooltip(this.tooltip);
-            }
-
-            if (tooltip) {
-                tooltip.draw(this.ctx, Utils.mouse.x, Utils.mouse.y);
-            }
-        }
-
-        // Dragging node logic
-        if (!Utils.mouse.hoveringInput && !Utils.mouse.hoveringOutput && !Utils.mouse.draggingIO) {
-            // Dragging logic
-            if (hoveringNode && Utils.mouse.clicking && !Utils.mouse.draggingNode) {
-                Utils.mouse.draggingNode = this;
-                Utils.mouse.dragOffset = { x: Utils.mouse.x - this.x, y: Utils.mouse.y - this.y };
-            }
-
-            if (Utils.mouse.draggingNode === this) {
-                this.move(Utils.mouse.x - Utils.mouse.dragOffset.x, Utils.mouse.y - Utils.mouse.dragOffset.y);
-            }
-        }
-
-        // Dragging IO Logic
-        if (((Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput) || Utils.mouse.draggingIO) && !Utils.mouse.draggingNode) {
-            if (Utils.mouse.clicking && !Utils.mouse.draggingIO) {
-                Utils.mouse.draggingIO = Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput as IO;
-            }
-
-            if (Utils.mouse.draggingIO) {
-                Utils.bezierLine(this.ctx, Utils.mouse.x, Utils.mouse.y, Utils.mouse.draggingIO.x, Utils.mouse.draggingIO.y, Utils.textColor);
-            }
-
-            if (!Utils.mouse.clicking && Utils.mouse.draggingIO) {
+            // Tool tip logic
+            if (!Utils.mouse.draggingNode) {
+                let tooltip: Tooltip | undefined;
                 if (Utils.mouse.hoveringInput) {
-                    Utils.mouse.draggingIO.connect(Utils.mouse.hoveringInput);
+                    tooltip = new Tooltip(Utils.mouse.hoveringInput.name);
                 }
                 else if (Utils.mouse.hoveringOutput) {
-                    Utils.mouse.hoveringOutput.connect(Utils.mouse.draggingIO);
+                    tooltip = new Tooltip(Utils.mouse.hoveringOutput.name);
                 }
-                Utils.mouse.draggingIO = undefined;
+                else if (this.tooltip && hoveringNode) {
+                    // tooltip = new Tooltip(this.tooltip);
+                }
+
+                if (tooltip) {
+                    tooltip.draw(this.ctx, Utils.mouse.x, Utils.mouse.y);
+                }
+            }
+
+            // Dragging node logic
+            if (!Utils.mouse.hoveringInput && !Utils.mouse.hoveringOutput && !Utils.mouse.draggingIO) {
+                // Dragging logic
+                if (hoveringNode && Utils.mouse.clicking && !Utils.mouse.draggingNode) {
+                    Utils.mouse.draggingNode = this;
+                    Utils.mouse.dragOffset = { x: Utils.mouse.x - this.x, y: Utils.mouse.y - this.y };
+                }
+
+                if (Utils.mouse.draggingNode === this) {
+                    this.move(Utils.mouse.x - Utils.mouse.dragOffset.x, Utils.mouse.y - Utils.mouse.dragOffset.y);
+                }
+            }
+
+            // Dragging IO Logic
+            if (((Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput) || Utils.mouse.draggingIO) && !Utils.mouse.draggingNode) {
+                if (Utils.mouse.clicking && !Utils.mouse.draggingIO) {
+                    Utils.mouse.draggingIO = Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput as IO;
+                }
+
+                if (Utils.mouse.draggingIO) {
+                    Utils.bezierLine(this.ctx, Utils.mouse.x, Utils.mouse.y, Utils.mouse.draggingIO.x, Utils.mouse.draggingIO.y, Utils.textColor);
+                }
+
+                if (!Utils.mouse.clicking && Utils.mouse.draggingIO) {
+                    if (Utils.mouse.hoveringInput) {
+                        Utils.mouse.draggingIO.connect(Utils.mouse.hoveringInput);
+                    }
+                    else if (Utils.mouse.hoveringOutput) {
+                        Utils.mouse.hoveringOutput.connect(Utils.mouse.draggingIO);
+                    }
+                    Utils.mouse.draggingIO = undefined;
+                }
             }
         }
     }
@@ -213,7 +265,10 @@ interface NodeSettings {
     widgetOptions?: NodeWidget[],
     x: number,
     y: number,
-    tooltip?: string
+    tooltip?: string,
+    isCustom?: boolean,
+    customNodes?: Node[],
+    id?: string
 }
 
 interface NodeWidget {

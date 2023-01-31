@@ -1,3 +1,11 @@
+:root {
+    --background: #212d38;
+    --foreground: #fff;
+    --primary: #2d4052;
+    --secondary: #3d5468;
+    --tertiary: #4d687d;
+}
+
 * {
     font-family: 'Roboto', monospace;
     color: white;
@@ -22,7 +30,7 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #212d38;
+    background-color: var(--background);
 }
 
 #canvas {
@@ -45,15 +53,15 @@ footer {
     left: 0;
     width: 100%;
     height: 50px;
-    background-color: #212d38;
-    color: #fff;
+    background-color: var(--background);
+    color: var(--foreground);
     text-align: center;
     line-height: 50px;
 }
 
 button {
-    background-color: #2d4052;
-    color: #fff;
+    background-color: var(--primary);
+    color: var(--foreground);
     border: 0;
     padding: 5px 10px;
     margin: 0 2px;
@@ -63,16 +71,16 @@ button {
 }
 
 button:hover {
-    background-color: #3d5468;
+    background-color: var(--secondary);
 }
 
 button:active {
-    background-color: #2d4052;
+    background-color: var(--primary);
 }
 
 .button-sm {
-    background-color: #2d4052;
-    color: #fff;
+    background-color: var(--primary);
+    color: var(--foreground);
     border: 0;
     padding: 5px 10px;
     margin: 0 2px;
@@ -83,8 +91,8 @@ button:active {
 }
 
 select {
-    background-color: #2d4052;
-    color: #fff;
+    background-color: var(--primary);
+    color: var(--foreground);
     border: 0;
     border-radius: 5px;
     padding: 5px 10px;
@@ -95,16 +103,16 @@ select {
 }
 
 select:hover {
-    background-color: #3d5468;
+    background-color: var(--secondary);
 }
 
 select:active {
-    background-color: #2d4052;
+    background-color: var(--primary);
 }
 
 option {
-    background-color: #2d4052;
-    color: #fff;
+    background-color: var(--primary);
+    color: var(--foreground);
     border: 0;
     border-radius: 5px;
     padding: 5px 10px;
@@ -130,7 +138,7 @@ option {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 400px;
-    background-color: #212d38;
+    background-color: var(--background);
     border-radius: 5px;
     padding: 10px;
     padding-bottom: 20px;
@@ -152,7 +160,7 @@ option {
 }
 
 #truth-table {
-    background-color: #212d38;
+    background-color: var(--background);
     position: absolute;
     z-index: 3;
 }
@@ -166,12 +174,12 @@ option {
 }
 
 #truth-table th {
-    background-color: #2d4052;
+    background-color: var(--primary);
     margin: 0;
 }
 
 #truth-table td {
-    background-color: #3d5468;
+    background-color: var(--secondary);
     text-align: center;
     padding: 3px;
     margin: 0;
@@ -194,4 +202,32 @@ option {
     cursor: pointer;
     transition: all 0.1s ease-in-out;
     z-index: 3;
+}
+
+#context {
+    position: absolute;
+    width: 150px;
+    padding: 5px;
+    background-color: var(--primary);
+    z-index: 5;
+}
+
+#context button {
+    background-color: var(--secondary);
+    width: 100%;
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+#context button:hover {
+    background-color: var(--tertiary);
+}
+
+#context button:active {
+    background-color: var(--secondary);
+}
+
+#context button:last-child {
+    margin-bottom: 0;
 }

@@ -13,7 +13,7 @@ jobs:
         with:
           overwrite: true
           directory: 'js'
-          js_engine: 'uglify-js'
+          js_engine: 'babel'
 
       - name: Auto committing minified files
         uses: stefanzweifel/git-auto-commit-action@v4

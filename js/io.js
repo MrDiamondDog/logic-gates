@@ -14,6 +14,9 @@ class IO {
         this.allowMultipleConnections = isOutput;
     }
     checkPower() {
+        for (let i = 0; i < this.connections.length; i++) {
+            this.connections[i].powered = this.powered;
+        }
         if (this.isOutput)
             return;
         else {
@@ -35,7 +38,6 @@ class IO {
         Utils.circle(ctx, this.x, this.y, 5, Utils.powerColor(this.powered));
         for (let i = 0; i < this.connections.length; i++) {
             Utils.bezierLine(ctx, this.connections[i].x, this.connections[i].y, this.x, this.y, Utils.powerColor(this.powered));
-            this.connections[i].powered = this.powered;
         }
     }
     canConnect(io) {

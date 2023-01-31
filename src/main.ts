@@ -1,6 +1,5 @@
 import Utils from "./utilities.js";
-import IO from "./io.js";
-import Node from "./node.js";
+import { ContextMenu, ContextMenuItem } from "./contextmenu.js";
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 canvas.width = window.innerWidth;
@@ -31,14 +30,10 @@ function Update() {
 
 
         const node = Utils.nodes[i];
-        ctx.font = "15px monospace";
-        ctx.fillStyle = Utils.footerTextColor;
         if (node.title == "Input") {
-            ctx.fillText(Utils.letters[Utils.inputs.length], node.x + node.width / 2 - Utils.getTextWidth(ctx, Utils.letters[Utils.inputs.length]) / 2, node.y + node.height - 7);
             Utils.inputs.push(node);
         }
         else if (node.title == "Output") {
-            ctx.fillText(Utils.letters[Utils.outputs.length + 13], node.x + node.width / 2 - Utils.getTextWidth(ctx, Utils.letters[Utils.outputs.length + 13]) / 2, node.y + node.height - 7);
             Utils.outputs.push(node);
         }
     }
@@ -48,9 +43,8 @@ function Update() {
         ctx.fillRect(Utils.mouse.dragStart.x, Utils.mouse.dragStart.y, Utils.mouse.x - Utils.mouse.dragStart.x, Utils.mouse.y - Utils.mouse.dragStart.y);
     }
 
-
-    for (let i = 0; i < Utils.nodes.length; i++) {
-
+    if (Utils.contextMenu) {
+        Utils.contextMenu.update();
     }
 }
 Update();
@@ -58,7 +52,7 @@ Update();
 function GenerateTruthTable() {
     const truthTable: boolean[][] = [];
     for (let i = 0; i < Utils.inputs.length; i++) {
-        Utils.inputs[i].widgets[0].off();
+        Utils.inputs[i].widgets[0].setPowered(false);
     }
 
     for (let i = 0; i < Utils.nodes.length; i++) {
@@ -78,8 +72,8 @@ function GenerateTruthTable() {
         for (let j = 0; j < Utils.inputs.length; j++) {
             const input = Utils.inputs[j];
             const powered = (i & (1 << j)) != 0;
-            if (powered) input.widgets[0].on();
-            else input.widgets[0].off();
+            if (powered) input.widgets[0].setPowered(true);
+            else input.widgets[0].setPowered(false);
         }
 
         // update the nodes
@@ -239,12 +233,17 @@ canvas.addEventListener('keydown', function (e) {
 
 window.addEventListener('contextmenu', function (e) {
     e.preventDefault();
+
+    Utils.contextMenu = new ContextMenu(ctx, Utils.mouse.x, Utils.mouse.y, [
+        new ContextMenuItem("AND", function () {
+            Utils.CreateNode(ctx, "AND", Utils.mouse.x, Utils.mouse.y);
+        }),
+    ]);
 });
 window.onresize = function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
-
 
 
 
@@ -272,3 +271,10 @@ hidett.addEventListener('click', function (e) {
 });
 truthTable.style.display = "block";
 hidett.innerHTML = "Hide Truth Table";
+
+const create = document.getElementById("create") as HTMLButtonElement;
+create.addEventListener('click', function (e) {
+    const name = prompt("Name of Node");
+    if (name == null) return;
+    Utils.CreateCustomNode(ctx, name);
+});

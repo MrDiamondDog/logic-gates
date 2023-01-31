@@ -1,9 +1,10 @@
 import Node from "./node.js";
 import IO from "./io.js";
+import { ContextMenu, ContextMenuItem } from "./contextmenu.js";
 import { ButtonWidget, Widget } from "./widgets.js";
 
 class Utils {
-    static letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
     static backgroundColor = '#212d38';
     static accentColor = '#2f3e4e';
@@ -16,6 +17,8 @@ class Utils {
     static nodes: Node[] = [];
     static inputs: Node[] = [];
     static outputs: Node[] = [];
+
+    static contextMenu: ContextMenu | undefined = undefined;
 
     static selectedNode: Node | undefined = undefined;
     static selectedNodes: Node[] = [];
@@ -88,8 +91,7 @@ class Utils {
         ctx.stroke();
     }
 
-    static CreateNode(ctx: CanvasRenderingContext2D, name: string) {
-        // find a position by adding to x and y until it doesn't intersect with any other nodes
+    static GetEmptySpace(ctx: CanvasRenderingContext2D){
         let x = 100;
         let y = 100;
         let intersects = true;
@@ -99,21 +101,49 @@ class Utils {
                 let node = this.nodes[i];
                 if (this.rectIntersectsRect(x, y, 200, 200, node.x, node.y, node.width, node.height)) {
                     intersects = true;
-                    x += 50;
-                    if (x > ctx.canvas.width - 200) {
-                        x = 100;
-                        y += 50;
+                    y += 50;
+                    if (y > ctx.canvas.height - 100) {
+                        y = 100;
+                        x += 50;
                     }
                     break;
                 }
             }
         }
 
+        return {x, y};
+    }
+
+    static CreateCustomNode(ctx : CanvasRenderingContext2D, name: string){
+        let {x, y} = this.GetEmptySpace(ctx);
+        let cache = this.nodes as Node[];
+        this.nodes = [];
+
+        this.nodes.push(new Node(ctx, {
+            title: name,
+            inputs: this.inputs.map((input) => input.id as string),
+            outputs: this.outputs.map((output) => output.id as string),
+            x: x,
+            y: y,
+            tooltip: "A custom node.",
+            isCustom: true,
+            customNodes: cache
+        }));
+
+        console.log(this.nodes);
+    }
+
+    static CreateNode(ctx: CanvasRenderingContext2D, name: string, x: number | undefined = undefined, y: number | undefined = undefined) {
+        if (!x || !y) {
+            x = this.GetEmptySpace(ctx).x;
+            y = this.GetEmptySpace(ctx).y;
+        }
+        let id = this.letters[(name == "input") ? this.inputs.length : (name == "output") ? this.outputs.length + 13 : 26];
+
         switch (name) {
             case "Random":
-                // set the name to something else from the list
                 name = this.prebuiltNodes[Math.floor(Math.random() * this.prebuiltNodes.length)];
-                this.CreateNode(ctx, name);
+                this.CreateNode(ctx, name, x, y);
                 break;
             case "or":
                 this.nodes.push(new Node(ctx, {
@@ -122,7 +152,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if either input is true."
+                    tooltip: "Outputs true if either input is true.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [inputs[0].powered || inputs[1].powered];
                 }))
@@ -134,7 +165,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are true."
+                    tooltip: "Outputs true if both inputs are true.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [inputs[0].powered && inputs[1].powered];
                 }));
@@ -146,7 +178,8 @@ class Utils {
                     outputs: ["B"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if the input is false."
+                    tooltip: "Outputs true if the input is false.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [!inputs[0].powered];
                 }));
@@ -163,7 +196,8 @@ class Utils {
                     x: x,
                     y: y,
                     tooltip: "Outputs true if the input is true.",
-                    widgetOptions: [{ type: "button", parentIOName: "A" }]
+                    widgetOptions: [{ type: "button", parentIOName: "A" }],
+                    id: id
                 }, (inputs: IO[], widgets: Widget[]) => {
                     return [widgets[0].powered];
                 }));
@@ -179,7 +213,8 @@ class Utils {
                     outputs: [],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if the input is true."
+                    tooltip: "Outputs true if the input is true.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [];
                 }));
@@ -191,7 +226,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if one input is true and the other is false."
+                    tooltip: "Outputs true if one input is true and the other is false.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [inputs[0].powered != inputs[1].powered];
                 }));
@@ -203,7 +239,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are false."
+                    tooltip: "Outputs true if both inputs are false.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [!(inputs[0].powered && inputs[1].powered)];
                 }));
@@ -215,7 +252,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are false."
+                    tooltip: "Outputs true if both inputs are false.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [!(inputs[0].powered || inputs[1].powered)];
                 }));
@@ -227,7 +265,8 @@ class Utils {
                     outputs: ["C"],
                     x: x,
                     y: y,
-                    tooltip: "Outputs true if both inputs are the same."
+                    tooltip: "Outputs true if both inputs are the same.",
+                    id: id
                 }, (inputs: IO[]) => {
                     return [inputs[0].powered == inputs[1].powered];
                 }));
