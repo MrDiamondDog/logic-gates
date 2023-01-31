@@ -1,4 +1,5 @@
 import Utils from "./utilities.js";
+import Node from "./node.js"
 import { ContextMenu, ContextMenuItem } from "./contextmenu.js";
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -276,5 +277,14 @@ const create = document.getElementById("create") as HTMLButtonElement;
 create.addEventListener('click', function (e) {
     const name = prompt("Name of Node");
     if (name == null) return;
-    Utils.CreateCustomNode(ctx, name);
+    const node: Node = Utils.CreateCustomNode(ctx, name);
+    const button = document.createElement("button");
+    button.innerText = name;
+    button.addEventListener("click", () => {
+        Utils.CreateCustomNode(ctx, name, false, node.customNodes);
+    });
+    nodeSelect.appendChild(button);
 });
+
+const mobileWarning = document.getElementById("mobile-warning") as HTMLDivElement;
+if (window.mobileAndTabletCheck()) mobileWarning.style.display = "block";

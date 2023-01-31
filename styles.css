@@ -16,7 +16,11 @@
     -ms-user-select: none;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
     margin: 0;
     padding: 5px;
     padding-bottom: 20px;
@@ -55,8 +59,10 @@ footer {
     height: 50px;
     background-color: var(--background);
     color: var(--foreground);
-    text-align: center;
-    line-height: 50px;
+    padding: 5px;
+    margin: 0;
+    line-height: 25px;
+    overflow-x: hidden;
 }
 
 button {
@@ -64,10 +70,12 @@ button {
     color: var(--foreground);
     border: 0;
     padding: 5px 10px;
-    margin: 0 2px;
+    margin: 2px;
+    margin-bottom: 0;
     cursor: pointer;
-    font-size:20px;
+    font-size: 20px;
     transition: all 0.1s ease-in-out;
+    overflow-x: hidden;
 }
 
 button:hover {
@@ -85,9 +93,9 @@ button:active {
     padding: 5px 10px;
     margin: 0 2px;
     cursor: pointer;
-    font-size:20px;
+    font-size: 20px;
     transition: all 0.1s ease-in-out;
-    font-size:14px;
+    font-size: 14px;
 }
 
 select {
@@ -98,7 +106,7 @@ select {
     padding: 5px 10px;
     margin: 0 2px;
     cursor: pointer;
-    font-size:20px;
+    font-size: 20px;
     transition: all 0.1s ease-in-out;
 }
 
@@ -118,45 +126,23 @@ option {
     padding: 5px 10px;
     margin: 0 2px;
     cursor: pointer;
-    font-size:20px;
+    font-size: 20px;
     transition: all 0.1s ease-in-out;
 }
 
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-}
-
-.overlay-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    background-color: var(--background);
-    border-radius: 5px;
-    padding: 10px;
-    padding-bottom: 20px;
-    z-index: 2;
-}
-
 #tt-container {
-    display:block;
+    display: block;
     bottom: 0;
     right: 0;
     padding: 6px;
-    padding-bottom:20px;
-    z-index:2;
+    padding-bottom: 20px;
+    z-index: 2;
     font-size: 20px;
 }
 
-#hide-tt, #copy-tt {
-    position:relative;
+#hide-tt,
+#copy-tt {
+    position: relative;
 }
 
 #truth-table {
@@ -195,8 +181,8 @@ option {
 
 #github-img {
     position: absolute;
-    bottom: 5px;
-    left: 5px;
+    bottom: 10px;
+    right: 10px;
     width: 35px;
     height: 35px;
     cursor: pointer;
@@ -230,4 +216,22 @@ option {
 
 #context button:last-child {
     margin-bottom: 0;
+}
+
+#mobile-warning {
+    position: absolute;
+    background-color: var(--primary);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    padding: 10px;
+}
+
+#mobile-warning button {
+    background-color: var(--secondary);
+}
+
+#mobile-warning button:active {
+    background-color: var(--tertiary);
 }

@@ -91,7 +91,7 @@ class Utils {
         ctx.stroke();
     }
 
-    static GetEmptySpace(ctx: CanvasRenderingContext2D){
+    static GetEmptySpace(ctx: CanvasRenderingContext2D) {
         let x = 100;
         let y = 100;
         let intersects = true;
@@ -111,15 +111,33 @@ class Utils {
             }
         }
 
-        return {x, y};
+        return { x, y };
     }
 
-    static CreateCustomNode(ctx : CanvasRenderingContext2D, name: string){
-        let {x, y} = this.GetEmptySpace(ctx);
+    static CreateCustomNode(ctx: CanvasRenderingContext2D, name: string, deleteAll: boolean = true, nodes: Node[] | undefined = undefined) {
+        let { x, y } = this.GetEmptySpace(ctx);
         let cache = this.nodes as Node[];
-        this.nodes = [];
+        if (deleteAll) this.nodes = [];
 
-        this.nodes.push(new Node(ctx, {
+        var inputs: Node[] = [];
+        var outputs: Node[] = [];
+        if (nodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].title == "Input") inputs.push(nodes[i]);
+                else if (nodes[i].title == "Output") outputs.push(nodes[i]);
+            }
+        }
+
+        const newNode = (nodes) ? new Node(ctx, {
+            title: name,
+            inputs: inputs.map((input) => input.id as string),
+            outputs: outputs.map((output) => output.id as string),
+            x: x,
+            y: y,
+            tooltip: "A custom node.",
+            isCustom: true,
+            customNodes: nodes
+        }) : new Node(ctx, {
             title: name,
             inputs: this.inputs.map((input) => input.id as string),
             outputs: this.outputs.map((output) => output.id as string),
@@ -128,9 +146,16 @@ class Utils {
             tooltip: "A custom node.",
             isCustom: true,
             customNodes: cache
-        }));
+        });
 
-        console.log(this.nodes);
+        if (nodes) {
+            newNode.x = x;
+            newNode.y = y;
+        }
+
+        this.nodes.push(newNode);
+
+        return newNode;
     }
 
     static CreateNode(ctx: CanvasRenderingContext2D, name: string, x: number | undefined = undefined, y: number | undefined = undefined) {
