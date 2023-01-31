@@ -6,7 +6,6 @@ jobs:
   minify:
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so auto-minify job can access it
       - uses: actions/checkout@v2
 
       - name: Auto Minify
@@ -16,8 +15,6 @@ jobs:
           directory: 'js'
           js_engine: 'uglify-js'
 
-      # Auto commits minified files to the repository
-      # Ignore it if you don't want to commit the files to the repository 
       - name: Auto committing minified files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
