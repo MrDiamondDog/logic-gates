@@ -287,4 +287,4 @@ create.addEventListener('click', function (e) {
 });
 
 const mobileWarning = document.getElementById("mobile-warning") as HTMLDivElement;
-if (window.mobileAndTabletCheck()) mobileWarning.style.display = "block";
+if (Utils.mobileAndTabletCheck()) mobileWarning.style.display = "block";
