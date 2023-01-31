@@ -6,10 +6,10 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "outDir": "dist",
+    "outDir": "js",
     "rootDir": "src",
     "moduleResolution": "node",
     "allowJs": true,
   },
-  "exclude": ["*.ex.*", "dist/*"]
+  "exclude": ["*.ex.*", "js/*"]
 }

@@ -1,20 +1,14 @@
 import Utils from "./utilities.js";
-import IO from "./io.js";
-import Node from "./node.js";
-
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const canvas = document.getElementById('canvas');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 50;
-const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+const ctx = canvas.getContext('2d');
 ctx.fillStyle = Utils.backgroundColor;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
 function Update() {
     requestAnimationFrame(Update);
     ctx.fillStyle = Utils.backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     ctx.fillStyle = Utils.accentColor;
     for (let i = 0; i < canvas.width + 50; i += 50) {
         for (let j = 0; j < canvas.height + 50; j += 50) {
@@ -23,13 +17,10 @@ function Update() {
             ctx.fill();
         }
     }
-
     Utils.inputs = [];
     Utils.outputs = [];
     for (let i = 0; i < Utils.nodes.length; i++) {
         Utils.nodes[i].update();
-
-
         const node = Utils.nodes[i];
         ctx.font = "15px monospace";
         ctx.fillStyle = Utils.footerTextColor;
@@ -42,25 +33,19 @@ function Update() {
             Utils.outputs.push(node);
         }
     }
-
     if (Utils.mouse.selecting) {
         ctx.fillStyle = Utils.selectColor;
         ctx.fillRect(Utils.mouse.dragStart.x, Utils.mouse.dragStart.y, Utils.mouse.x - Utils.mouse.dragStart.x, Utils.mouse.y - Utils.mouse.dragStart.y);
     }
-
-
     for (let i = 0; i < Utils.nodes.length; i++) {
-
     }
 }
 Update();
-
 function GenerateTruthTable() {
-    const truthTable: boolean[][] = [];
+    const truthTable = [];
     for (let i = 0; i < Utils.inputs.length; i++) {
         Utils.inputs[i].widgets[0].off();
     }
-
     for (let i = 0; i < Utils.nodes.length; i++) {
         const node = Utils.nodes[i];
         node.update();
@@ -69,19 +54,18 @@ function GenerateTruthTable() {
         const node = Utils.nodes[i];
         node.update();
     }
-
     // go through all combinations of inputs on/off and get the outputs
     for (let i = 0; i < Math.pow(2, Utils.inputs.length); i++) {
-        const row: boolean[] = [];
-
+        const row = [];
         // set the inputs, powered or not
         for (let j = 0; j < Utils.inputs.length; j++) {
             const input = Utils.inputs[j];
             const powered = (i & (1 << j)) != 0;
-            if (powered) input.widgets[0].on();
-            else input.widgets[0].off();
+            if (powered)
+                input.widgets[0].on();
+            else
+                input.widgets[0].off();
         }
-
         // update the nodes
         for (let j = 0; j < Utils.nodes.length; j++) {
             const node = Utils.nodes[j];
@@ -91,23 +75,18 @@ function GenerateTruthTable() {
             const node = Utils.nodes[j];
             node.update();
         }
-
         for (let j = 0; j < Utils.inputs.length; j++) {
             const input = Utils.inputs[j];
             row.push(input.widgets[0].powered);
         }
-
         for (let j = 0; j < Utils.outputs.length; j++) {
             const output = Utils.outputs[j];
             row.push(output.inputs[0].powered);
         }
-
         truthTable.push(row);
     }
-
-    const outputTable = document.getElementById("truth-table") as HTMLTableElement;
+    const outputTable = document.getElementById("truth-table");
     outputTable.innerHTML = "";
-
     const header = document.createElement("tr");
     for (let i = 0; i < Utils.inputs.length; i++) {
         const td = document.createElement("td");
@@ -120,7 +99,6 @@ function GenerateTruthTable() {
         header.appendChild(td);
     }
     outputTable.appendChild(header);
-
     for (let i = 0; i < truthTable.length; i++) {
         const row = truthTable[i];
         const tr = document.createElement("tr");
@@ -132,24 +110,17 @@ function GenerateTruthTable() {
         }
         outputTable.appendChild(tr);
     }
-
     outputTable.style.display = "block";
     hidett.innerHTML = "Hide Truth Table";
-    const parent = outputTable.parentNode as HTMLElement;
+    const parent = outputTable.parentNode;
     parent.style.display = "block";
 }
-
-
-
-
 canvas.addEventListener('mousemove', function (e) {
     Utils.mouse.x = e.clientX;
     Utils.mouse.y = e.clientY;
-
     if (Utils.mouse.clicking) {
         Utils.mouse.dragging = true;
     }
-
     Utils.mouse.hoveringInput = undefined;
     Utils.mouse.hoveringOutput = undefined;
     for (let i = 0; i < Utils.nodes.length; i++) {
@@ -170,7 +141,8 @@ canvas.addEventListener('mousemove', function (e) {
 });
 canvas.addEventListener('mousedown', function (e) {
     if (e.button == 2) {
-        if (Utils.mouse.selecting) return;
+        if (Utils.mouse.selecting)
+            return;
         Utils.mouse.dragStart.x = Utils.mouse.x;
         Utils.mouse.dragStart.y = Utils.mouse.y;
         Utils.mouse.selecting = true;
@@ -184,7 +156,6 @@ canvas.addEventListener('mousedown', function (e) {
     }
     else {
         Utils.mouse.clicking = true;
-
         // clear previous selection
         if (Utils.selectedNode) {
             Utils.selectedNode.selected = false;
@@ -204,7 +175,6 @@ canvas.addEventListener('mouseup', function (e) {
     Utils.mouse.clicking = false;
     Utils.mouse.dragging = false;
     Utils.mouse.draggingNode = null;
-
     if (Utils.mouse.selecting) {
         Utils.mouse.selecting = false;
         for (let i = 0; i < Utils.nodes.length; i++) {
@@ -232,24 +202,14 @@ canvas.addEventListener('keydown', function (e) {
         }
     }
 });
-
-
-
-
-
 window.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 window.onresize = function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-}
-
-
-
-
-
-const nodeSelect = document.getElementById("footer") as HTMLDivElement;
+};
+const nodeSelect = document.getElementById("footer");
 for (let i = 0; i < Utils.prebuiltNodes.length; i++) {
     const button = document.createElement("button");
     button.innerText = Utils.prebuiltNodes[i];
@@ -258,14 +218,12 @@ for (let i = 0; i < Utils.prebuiltNodes.length; i++) {
     });
     nodeSelect.appendChild(button);
 }
-
-const generate = document.getElementById("generate") as HTMLButtonElement;
+const generate = document.getElementById("generate");
 generate.addEventListener('click', function (e) {
     GenerateTruthTable();
 });
-
-const hidett = document.getElementById("hide-tt") as HTMLButtonElement;
-const truthTable = document.getElementById("truth-table") as HTMLTableElement;
+const hidett = document.getElementById("hide-tt");
+const truthTable = document.getElementById("truth-table");
 hidett.addEventListener('click', function (e) {
     truthTable.style.display = truthTable.style.display == "none" ? "block" : "none";
     this.innerHTML = truthTable.style.display == "none" ? "Show Truth Table" : "Hide Truth Table";

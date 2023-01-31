@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logic Gate Sim</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="src/styles.css">
 </head>
+
 <body>
     <canvas id="canvas" tabindex="1"></canvas>
-    <img id="github-img" src="git.png" alt="github logo" onclick="window.location.href='https://github.com/MrDiamondDog/logic-gates'">
+    <img id="github-img" src="git.png" alt="github logo"
+        onclick="window.location.href='https://github.com/MrDiamondDog/logic-gates'">
     <footer id="footer">
         <button id="generate">Truth Table</button>
     </footer>
-    <div id="tt-container">
+    <div id="tt-container" style="display:none">
         <button id="hide-tt" class="button-sm">Hide Truth Table</button>
         <table id="truth-table"></table>
     </div>
     <script>var exports = {};</script> <!-- thanks, typescript -->
-    <script src="dist/main.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
 </body>
+
 </html>
