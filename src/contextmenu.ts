@@ -47,15 +47,15 @@ export class ContextMenu {
 
 export class ContextMenuItem {
     element : HTMLElement;
-    callback : () => void;
+    callback : (...params : any) => boolean;
     parent: ContextMenu | undefined;
 
-    constructor(element : HTMLElement, callback : () => void, eventListener: string = "click") {
+    constructor(element : HTMLElement, callback : (...params: any) => boolean, eventListener: string = "click") {
         this.element = element;
         this.callback = callback;
-        this.element.addEventListener(eventListener, () => { 
-            this.callback();
-            this.parent?.close();
+        this.element.addEventListener(eventListener, (...params) => { 
+            const result: boolean = this.callback(params);
+            if (result) this.parent?.close();
         });
     }
 }

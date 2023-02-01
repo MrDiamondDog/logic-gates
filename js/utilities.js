@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import Node from "./node.js";
 import { ContextMenuItem } from "./contextmenu.js";
 class Utils {
@@ -24,7 +15,33 @@ class Utils {
             option.innerText = Utils.prebuiltNodes[i];
             select.appendChild(option);
         }
-        const item = new ContextMenuItem(select, () => this.CreateNode(ctx, select.value, this.mouse.x, this.mouse.y), "change");
+        const item = new ContextMenuItem(select, () => {
+            this.CreateNode(ctx, select.value, this.mouse.x, this.mouse.y);
+            return true;
+        }, "change");
+        return item;
+    }
+    static deleteNodeContextMenuItem(ctx) {
+        const element = document.createElement("button");
+        element.innerHTML = "Delete";
+        const item = new ContextMenuItem(element, () => {
+            var _a;
+            (_a = this.selectedNode) === null || _a === void 0 ? void 0 : _a.delete();
+            return true;
+        });
+        return item;
+    }
+    static inputContextMenuItem(ctx, placeholder, callback, charLimit = 10) {
+        const input = document.createElement("input");
+        input.placeholder = placeholder;
+        input.type = "text";
+        input.maxLength = charLimit;
+        const item = new ContextMenuItem(input, (e) => {
+            if (e[0].key != "Enter")
+                return false;
+            callback(input.value);
+            return true;
+        }, "keydown");
         return item;
     }
     static getTextWidth(ctx, text) {
@@ -122,6 +139,59 @@ class Utils {
         }
         this.nodes.push(newNode);
         return newNode;
+    }
+    // thanks chatgpt
+    static tableToASCII(table) {
+        const rows = table.rows.length;
+        const columns = table.rows[0].cells.length;
+        const data = [];
+        for (let i = 0; i < rows; i++) {
+            data[i] = [];
+            for (let j = 0; j < columns; j++) {
+                data[i][j] = table.rows[i].cells[j].innerHTML;
+            }
+        }
+        let result = "";
+        // Find the maximum length of each column
+        const colWidths = Array(columns).fill(0);
+        for (const row of data) {
+            for (let i = 0; i < row.length; i++) {
+                colWidths[i] = Math.max(colWidths[i], row[i].length);
+            }
+        }
+        // Create the top border
+        result += "+";
+        for (const width of colWidths) {
+            result += "-".repeat(width + 2) + "+";
+        }
+        result += "\n";
+        // Create the header
+        result += "|";
+        for (let i = 0; i < data[0].length; i++) {
+            result += " " + data[0][i].padEnd(colWidths[i]) + " |";
+        }
+        result += "\n";
+        // Create the separator between the header and the content
+        result += "+";
+        for (const width of colWidths) {
+            result += "-".repeat(width + 2) + "+";
+        }
+        result += "\n";
+        // Create the table contents
+        for (let i = 1; i < data.length; i++) {
+            result += "|";
+            for (let j = 0; j < data[i].length; j++) {
+                result += " " + data[i][j].padEnd(colWidths[j]) + " |";
+            }
+            result += "\n";
+        }
+        // Create the bottom border
+        result += "+";
+        for (const width of colWidths) {
+            result += "-".repeat(width + 2) + "+";
+        }
+        result += "\n";
+        return result;
     }
     static CreateNode(ctx, name, x = undefined, y = undefined) {
         if (!x || !y) {
@@ -256,12 +326,22 @@ class Utils {
                     return [inputs[0].powered == inputs[1].powered];
                 }));
                 break;
+            case "comment":
+                this.nodes.push(new Node(ctx, {
+                    title: 'Comment',
+                    inputs: ["A"],
+                    outputs: ["B"],
+                    x: x,
+                    y: y,
+                    tooltip: "Outputs true if the input is true.",
+                    id: id
+                }, (inputs, widgets) => {
+                    return [inputs[0].powered];
+                }));
         }
     }
-    static sleep(ms) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return Promise.resolve(setTimeout(() => { }, ms));
-        });
+    static async sleep(ms) {
+        return Promise.resolve(setTimeout(() => { }, ms));
     }
 }
 Utils.letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -277,9 +357,7 @@ Utils.inputs = [];
 Utils.outputs = [];
 Utils.contextMenu = undefined;
 Utils.selectedNode = undefined;
-Utils.selectedNodes = [];
-Utils.selectingMultiple = false;
-Utils.prebuiltNodes = ["input", "output", "or", "nor", "xor", "and", "xnor", "nand", "not"];
+Utils.prebuiltNodes = ["input", "output", "or", "nor", "xor", "and", "xnor", "nand", "not", "comment"];
 Utils.mouse = {
     x: 0,
     y: 0,

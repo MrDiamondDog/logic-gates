@@ -38,10 +38,11 @@ export class ContextMenuItem {
     constructor(element, callback, eventListener = "click") {
         this.element = element;
         this.callback = callback;
-        this.element.addEventListener(eventListener, () => {
+        this.element.addEventListener(eventListener, (...params) => {
             var _a;
-            this.callback();
-            (_a = this.parent) === null || _a === void 0 ? void 0 : _a.close();
+            const result = this.callback(params);
+            if (result)
+                (_a = this.parent) === null || _a === void 0 ? void 0 : _a.close();
         });
     }
 }

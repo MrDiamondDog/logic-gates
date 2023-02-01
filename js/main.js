@@ -135,7 +135,8 @@ canvas.addEventListener('mousemove', function (e) {
     }
 });
 canvas.addEventListener('mousedown', function (e) {
-    Utils.mouse.clicking = true;
+    if (e.button == 0)
+        Utils.mouse.clicking = true;
     // clear previous selection
     if (Utils.selectedNode) {
         Utils.selectedNode.selected = false;
@@ -164,9 +165,16 @@ canvas.addEventListener('keydown', function (e) {
     }
 });
 window.addEventListener('contextmenu', function (e) {
+    var _a;
     e.preventDefault();
     new ContextMenu(ctx, Utils.mouse.x, Utils.mouse.y, [
-        Utils.addNodeContextMenuItem(ctx)
+        Utils.addNodeContextMenuItem(ctx),
+        Utils.deleteNodeContextMenuItem(ctx),
+        Utils.inputContextMenuItem(ctx, "Rename", (text) => {
+            if (Utils.selectedNode) {
+                Utils.selectedNode.id = text;
+            }
+        }, (((_a = Utils.selectedNode) === null || _a === void 0 ? void 0 : _a.title) == "Comment") ? 20 : 5)
     ]).create();
 });
 window.onresize = function () {
@@ -191,6 +199,7 @@ generate.addEventListener('click', function (e) {
     GenerateTruthTable();
 });
 const hidett = document.getElementById("hide-tt");
+const copytt = document.getElementById("copy-tt");
 const truthTable = document.getElementById("truth-table");
 hidett.addEventListener('click', function (e) {
     truthTable.style.display = truthTable.style.display == "none" ? "block" : "none";
@@ -198,6 +207,10 @@ hidett.addEventListener('click', function (e) {
 });
 truthTable.style.display = "block";
 hidett.innerHTML = "Hide Truth Table";
+copytt.addEventListener('click', function (e) {
+    const text = Utils.tableToASCII(truthTable);
+    navigator.clipboard.writeText(text);
+});
 const create = document.getElementById("create");
 create.addEventListener('click', function (e) {
     const name = prompt("Name of Node");

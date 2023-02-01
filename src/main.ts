@@ -160,7 +160,7 @@ canvas.addEventListener('mousemove', function (e) {
     }
 });
 canvas.addEventListener('mousedown', function (e) {
-    Utils.mouse.clicking = true;
+    if (e.button == 0) Utils.mouse.clicking = true;
 
     // clear previous selection
     if (Utils.selectedNode) {
@@ -198,7 +198,13 @@ window.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 
     new ContextMenu(ctx, Utils.mouse.x, Utils.mouse.y, [
-        Utils.addNodeContextMenuItem(ctx)
+        Utils.addNodeContextMenuItem(ctx),
+        Utils.deleteNodeContextMenuItem(ctx),
+        Utils.inputContextMenuItem(ctx, "Rename", (text: string) => {
+            if (Utils.selectedNode) {
+                Utils.selectedNode.id = text;
+            }
+        }, (Utils.selectedNode?.title == "Comment") ? 20 : 5)
     ]).create();
 });
 window.onresize = function () {
@@ -230,6 +236,7 @@ generate.addEventListener('click', function (e) {
 });
 
 const hidett = document.getElementById("hide-tt") as HTMLButtonElement;
+const copytt = document.getElementById("copy-tt") as HTMLButtonElement;
 const truthTable = document.getElementById("truth-table") as HTMLTableElement;
 hidett.addEventListener('click', function (e) {
     truthTable.style.display = truthTable.style.display == "none" ? "block" : "none";
@@ -237,6 +244,10 @@ hidett.addEventListener('click', function (e) {
 });
 truthTable.style.display = "block";
 hidett.innerHTML = "Hide Truth Table";
+copytt.addEventListener('click', function (e) {
+    const text = Utils.tableToASCII(truthTable);
+    navigator.clipboard.writeText(text);
+});
 
 const create = document.getElementById("create") as HTMLButtonElement;
 create.addEventListener('click', function (e) {

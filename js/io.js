@@ -41,7 +41,13 @@ class IO {
         }
     }
     canConnect(io) {
-        return this.isOutput != io.isOutput && (this.allowMultipleConnections || this.connections.length == 0) && (io.allowMultipleConnections || io.connections.length == 0) && this.parentNode != io.parentNode && io.parentNode != this.parentNode;
+        return (this.isOutput && !io.isOutput) &&
+            (io.backwardConnections.length == 0) &&
+            (this.allowMultipleConnections || this.connections.length == 0) &&
+            (io.allowMultipleConnections || io.connections.length == 0) &&
+            this.parentNode != io.parentNode &&
+            io.parentNode != this.parentNode &&
+            !this.deleted && !io.deleted;
     }
     connect(io) {
         if (this.canConnect(io)) {
