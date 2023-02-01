@@ -78,6 +78,9 @@ class Utils {
         ctx.bezierCurveTo(x1 - 50, y1, x2 + 50, y2, x2, y2);
         ctx.stroke();
     }
+    static download(json, fileName) {
+        // todo
+    }
     static GetEmptySpace(ctx) {
         let x = 100;
         let y = 100;

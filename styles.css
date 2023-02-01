@@ -89,7 +89,7 @@ button:active {
     background-color: var(--primary);
 }
 
-input {
+input, textarea {
     background-color: var(--primary);
     color: var(--foreground);
     border: 0;
@@ -104,15 +104,15 @@ input {
     border-radius: 3px;
 }
 
-input:hover {
+input:hover, textarea:hover {
     background-color: var(--secondary);
 }
 
-input:active {
+input:active, textarea:active {
     background-color: var(--primary);
 }
 
-input::placeholder{
+input::placeholder, textarea::placeholder{
     color: var(--placeholder);
 }
 
@@ -297,4 +297,27 @@ option {
     left: 5px;
     background-color: var(--background);
     z-index: 4;
+}
+
+#suggest-form {
+    position: absolute;
+    width: 50vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--primary);
+    padding: 10px;
+}
+
+#suggest-form button, #suggest-form textarea {
+    background-color: var(--secondary);
+}
+
+#suggest-form button:active, #suggest-form textarea:active {
+    background-color: var(--tertiary);
+}
+
+#suggestion {
+    height: 100px;
+    vertical-align: text-top;
 }

@@ -231,3 +231,25 @@ const clear = document.getElementById("clear");
 clear.addEventListener('click', function (e) {
     Utils.nodes = [];
 });
+const save = document.getElementById("save");
+save.addEventListener('click', function (e) {
+    //todo
+});
+const load = document.getElementById("load");
+load.addEventListener('click', function (e) {
+    const file = document.createElement("input");
+    file.style.display = "none";
+    file.type = "file";
+    file.click();
+    file.onchange = function (e) {
+        if (file.files != null) {
+            const fr = new FileReader();
+            fr.onload = function (evt) {
+                if (evt.target != null) {
+                    // todo
+                }
+            };
+            fr.readAsText(file.files[0]);
+        }
+    };
+});

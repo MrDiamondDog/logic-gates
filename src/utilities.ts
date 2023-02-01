@@ -127,6 +127,10 @@ class Utils {
         ctx.stroke();
     }
 
+    static download(json: string, fileName: string) {
+         // todo
+    }
+
     static GetEmptySpace(ctx: CanvasRenderingContext2D) {
         let x = 100;
         let y = 100;
