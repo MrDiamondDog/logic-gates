@@ -11,13 +11,19 @@ export class ContextMenu {
         this.x = x;
         this.y = y;
         this.items = items;
+
+        for (let i = 0; i < this.items.length; i++) {
+            this.items[i].parent = this;
+        }
     }
 
     update() {
-
+        if (Utils.mouse.clicking) {
+            document.getElementById("context")?.remove();
+        }
     }
 
-    draw() {
+    create() {
         document.getElementById("context")?.remove();
         const context = document.createElement("div");
         context.id = "context";
@@ -26,29 +32,30 @@ export class ContextMenu {
         
         for (let i = 0; i < this.items.length; i++) {
             const item = this.items[i];
-            const button = document.createElement("button");
-            button.innerText = item.text;
-            button.onclick = () => {
-                item.click();
-                document.getElementById("context")?.remove();
-            }
-            context.appendChild(button);
+            context.appendChild(item.element);
         }
 
         document.body.appendChild(context);
+
+        setInterval(this.update, 1000 / 60)
+    }
+
+    close() {
+        document.getElementById("context")?.remove();
     }
 }
 
 export class ContextMenuItem {
-    text : string;
+    element : HTMLElement;
     callback : () => void;
+    parent: ContextMenu | undefined;
 
-    constructor(text : string, callback : () => void) {
-        this.text = text;
+    constructor(element : HTMLElement, callback : () => void, eventListener: string = "click") {
+        this.element = element;
         this.callback = callback;
-    }
-
-    click() {
-        this.callback();
+        this.element.addEventListener(eventListener, () => { 
+            this.callback();
+            this.parent?.close();
+        });
     }
 }

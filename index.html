@@ -13,17 +13,21 @@
     <canvas id="canvas" tabindex="1"></canvas>
     <img id="github-img" src="git.png" alt="github logo"
         onclick="window.location.href='https://github.com/MrDiamondDog/logic-gates'">
-    <footer id="footer">
+    <div id="menu">
         <button id="create">Create</button>
         <button id="generate">Truth Table</button>
+        <button id="clear">Clear</button>
+        <button id="random">Random Node</button>
+    </div>
+    <footer id="footer">
     </footer>
     <div id="tt-container" style="display:none">
         <button id="hide-tt" class="button-sm">Hide Truth Table</button>
         <table id="truth-table"></table>
     </div>
     <div id="mobile-warning" style="display:none">
-        <h1>Mobile User </h1>
-        <p>This project is not made for mobile, nor will it ever be. Most likely, it won't work at all. If you end up trying, I wish you luck!</p>
+        <h1>Mobile User</h1>
+        <p>This project does not work on mobile at all. Nothing works. Please come back on a computer.</p>
         <button onclick="document.getElementById('mobile-warning').style.display = 'none'">Ok</button>
         <button onclick="history.back()">Back</button>
     </div>

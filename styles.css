@@ -142,12 +142,14 @@ option {
 
 #hide-tt,
 #copy-tt {
-    position: relative;
+    position: absolute;
+    top: 50px;
 }
 
 #truth-table {
     background-color: var(--background);
     position: absolute;
+    top: 85px;
     z-index: 3;
 }
 
@@ -234,4 +236,12 @@ option {
 
 #mobile-warning button:active {
     background-color: var(--tertiary);
+}
+
+#menu {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: var(--background);
+    z-index: 4;
 }

@@ -24,7 +24,7 @@ class Utils {
     static selectedNodes: Node[] = [];
     static selectingMultiple = false;
 
-    static prebuiltNodes = ["Random", "input", "output", "or", "nor", "xor", "and", "xnor", "nand", "not"];
+    static prebuiltNodes = ["input", "output", "or", "nor", "xor", "and", "xnor", "nand", "not"];
 
     static powerColor(powered: boolean) {
         return !powered ? '#84423f' : '#34c13b';
@@ -42,12 +42,23 @@ class Utils {
             x: 0,
             y: 0
         },
-        dragStart: {
-            x: 0,
-            y: 0
-        },
-        selecting: false,
         clicking: false,
+    }
+
+    static addNodeContextMenuItem(ctx: CanvasRenderingContext2D){
+        const select = document.createElement("select");
+        const placeHolder = document.createElement("option");
+        placeHolder.innerText = "New Node";
+        select.appendChild(placeHolder);
+        for (let i = 0; i < Utils.prebuiltNodes.length; i++) {
+            const option = document.createElement("option");
+            option.value = Utils.prebuiltNodes[i];
+            option.innerText = Utils.prebuiltNodes[i];
+            select.appendChild(option);
+        }
+
+        const item = new ContextMenuItem(select, () => this.CreateNode(ctx, select.value, this.mouse.x, this.mouse.y), "change");
+        return item;
     }
 
     static getTextWidth(ctx: CanvasRenderingContext2D, text: string) {
@@ -166,10 +177,6 @@ class Utils {
         let id = this.letters[(name == "input") ? this.inputs.length : (name == "output") ? this.outputs.length + 13 : 26];
 
         switch (name) {
-            case "Random":
-                name = this.prebuiltNodes[Math.floor(Math.random() * this.prebuiltNodes.length)];
-                this.CreateNode(ctx, name, x, y);
-                break;
             case "or":
                 this.nodes.push(new Node(ctx, {
                     title: 'OR',

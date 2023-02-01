@@ -38,19 +38,15 @@ function Update() {
             Utils.outputs.push(node);
         }
     }
-
-    if (Utils.mouse.selecting) {
-        ctx.fillStyle = Utils.selectColor;
-        ctx.fillRect(Utils.mouse.dragStart.x, Utils.mouse.dragStart.y, Utils.mouse.x - Utils.mouse.dragStart.x, Utils.mouse.y - Utils.mouse.dragStart.y);
-    }
-
-    if (Utils.contextMenu) {
-        Utils.contextMenu.update();
-    }
 }
 Update();
 
 function GenerateTruthTable() {
+    if (Utils.inputs.length == 0 || Utils.outputs.length == 0) {
+        alert("You need at least one input and one output to generate a truth table.");
+        return;
+    }
+
     const truthTable: boolean[][] = [];
     for (let i = 0; i < Utils.inputs.length; i++) {
         Utils.inputs[i].widgets[0].setPowered(false);
@@ -106,12 +102,12 @@ function GenerateTruthTable() {
     const header = document.createElement("tr");
     for (let i = 0; i < Utils.inputs.length; i++) {
         const td = document.createElement("td");
-        td.innerText = Utils.letters[i];
+        td.innerText = Utils.inputs[i].id as string;
         header.appendChild(td);
     }
     for (let i = 0; i < Utils.outputs.length; i++) {
         const td = document.createElement("td");
-        td.innerText = Utils.letters[i + 16];
+        td.innerText = Utils.outputs[i].id as string;
         header.appendChild(td);
     }
     outputTable.appendChild(header);
@@ -164,34 +160,19 @@ canvas.addEventListener('mousemove', function (e) {
     }
 });
 canvas.addEventListener('mousedown', function (e) {
-    if (e.button == 2) {
-        if (Utils.mouse.selecting) return;
-        Utils.mouse.dragStart.x = Utils.mouse.x;
-        Utils.mouse.dragStart.y = Utils.mouse.y;
-        Utils.mouse.selecting = true;
-    }
-    else if (Utils.selectingMultiple) {
-        Utils.selectingMultiple = false;
-        for (let i = 0; i < Utils.selectedNodes.length; i++) {
-            Utils.selectedNodes[i].selected = false;
-        }
-        Utils.selectedNodes = [];
-    }
-    else {
-        Utils.mouse.clicking = true;
+    Utils.mouse.clicking = true;
 
-        // clear previous selection
-        if (Utils.selectedNode) {
-            Utils.selectedNode.selected = false;
-            Utils.selectedNode = undefined;
-        }
-        for (let i = 0; i < Utils.nodes.length; i++) {
-            const node = Utils.nodes[i];
-            if (node.contains(Utils.mouse.x, Utils.mouse.y)) {
-                Utils.selectedNode = node;
-                node.selected = true;
-                break;
-            }
+    // clear previous selection
+    if (Utils.selectedNode) {
+        Utils.selectedNode.selected = false;
+        Utils.selectedNode = undefined;
+    }
+    for (let i = 0; i < Utils.nodes.length; i++) {
+        const node = Utils.nodes[i];
+        if (node.contains(Utils.mouse.x, Utils.mouse.y)) {
+            Utils.selectedNode = node;
+            node.selected = true;
+            break;
         }
     }
 });
@@ -199,29 +180,10 @@ canvas.addEventListener('mouseup', function (e) {
     Utils.mouse.clicking = false;
     Utils.mouse.dragging = false;
     Utils.mouse.draggingNode = null;
-
-    if (Utils.mouse.selecting) {
-        Utils.mouse.selecting = false;
-        for (let i = 0; i < Utils.nodes.length; i++) {
-            const node = Utils.nodes[i];
-            if (node.intersects(Utils.mouse.dragStart.x, Utils.mouse.dragStart.y, Utils.mouse.x, Utils.mouse.y) || node.intersects(Utils.mouse.x, Utils.mouse.y, Utils.mouse.dragStart.x, Utils.mouse.dragStart.y) || node.intersects(Utils.mouse.dragStart.x, Utils.mouse.y, Utils.mouse.x, Utils.mouse.dragStart.y) || node.intersects(Utils.mouse.x, Utils.mouse.dragStart.y, Utils.mouse.dragStart.x, Utils.mouse.y)) {
-                node.selected = true;
-                Utils.selectedNodes.push(node);
-                Utils.selectingMultiple = true;
-            }
-        }
-    }
 });
 canvas.addEventListener('keydown', function (e) {
     if (e.key == "Delete") {
-        if (Utils.selectingMultiple) {
-            for (let i = 0; i < Utils.selectedNodes.length; i++) {
-                Utils.selectedNodes[i].delete();
-            }
-            Utils.selectedNodes = [];
-            Utils.selectingMultiple = false;
-        }
-        else if (Utils.selectedNode) {
+        if (Utils.selectedNode) {
             Utils.selectedNode.delete();
             Utils.selectedNode = undefined;
         }
@@ -235,11 +197,9 @@ canvas.addEventListener('keydown', function (e) {
 window.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 
-    Utils.contextMenu = new ContextMenu(ctx, Utils.mouse.x, Utils.mouse.y, [
-        new ContextMenuItem("AND", function () {
-            Utils.CreateNode(ctx, "AND", Utils.mouse.x, Utils.mouse.y);
-        }),
-    ]);
+    new ContextMenu(ctx, Utils.mouse.x, Utils.mouse.y, [
+        Utils.addNodeContextMenuItem(ctx)
+    ]).create();
 });
 window.onresize = function () {
     canvas.width = window.innerWidth;
@@ -258,6 +218,11 @@ for (let i = 0; i < Utils.prebuiltNodes.length; i++) {
     });
     nodeSelect.appendChild(button);
 }
+
+const randomNode = document.getElementById("random") as HTMLButtonElement;
+randomNode.addEventListener('click', function (e) {
+    Utils.CreateNode(ctx, Utils.prebuiltNodes[Math.floor(Math.random() * Utils.prebuiltNodes.length)]);
+});
 
 const generate = document.getElementById("generate") as HTMLButtonElement;
 generate.addEventListener('click', function (e) {
@@ -288,3 +253,8 @@ create.addEventListener('click', function (e) {
 
 const mobileWarning = document.getElementById("mobile-warning") as HTMLDivElement;
 if (Utils.mobileAndTabletCheck()) mobileWarning.style.display = "block";
+
+const clear = document.getElementById("clear") as HTMLButtonElement;
+clear.addEventListener('click', function (e) {
+    Utils.nodes = [];
+});
