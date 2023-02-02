@@ -1,6 +1,7 @@
 import Utils from "./utilities.js";
 import Node from "./node.js"
 import { ContextMenu, ContextMenuItem } from "./contextmenu.js";
+import cloneDeep from "../node_modules/lodash-es/cloneDeep.js";
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 canvas.width = window.innerWidth;
@@ -257,7 +258,9 @@ create.addEventListener('click', function (e) {
     const button = document.createElement("button");
     button.innerText = name;
     button.addEventListener("click", () => {
-        Utils.CreateCustomNode(ctx, name, false, node.customNodes);
+        const nodes: Node[] = cloneDeep(node.customNodes);
+        console.log(nodes[0])
+        Utils.CreateCustomNode(ctx, name, false, nodes);
     });
     nodeSelect.appendChild(button);
 });

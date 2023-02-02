@@ -18,6 +18,8 @@ class Utils {
     static inputs: Node[] = [];
     static outputs: Node[] = [];
 
+    static ios: IO[] = [];
+
     static contextMenu: ContextMenu | undefined = undefined;
 
     static selectedNode: Node | undefined = undefined;
@@ -154,6 +156,18 @@ class Utils {
         return { x, y };
     }
 
+    static GetNodeByUUID(uuid: string) {
+        return this.nodes.filter((node) => {
+            return node.uuid == uuid;
+        })[0];
+    }
+
+    static GetConnectionByUUID(uuid: string) {
+        return this.ios.filter((io) => {
+            return io.uuid == uuid;
+        })[0];
+    }
+
     static CreateCustomNode(ctx: CanvasRenderingContext2D, name: string, deleteAll: boolean = true, nodes: Node[] | undefined = undefined) {
         let { x, y } = this.GetEmptySpace(ctx);
         let cache = this.nodes as Node[];
@@ -262,6 +276,8 @@ class Utils {
       }
 
     static CreateNode(ctx: CanvasRenderingContext2D, name: string, x: number | undefined = undefined, y: number | undefined = undefined) {
+        let madeNode = true;
+        
         if (!x || !y) {
             x = this.GetEmptySpace(ctx).x;
             y = this.GetEmptySpace(ctx).y;
@@ -280,7 +296,7 @@ class Utils {
                     id: id
                 }, (inputs: IO[]) => {
                     return [inputs[0].powered || inputs[1].powered];
-                }))
+                }));
                 break;
             case "and":
                 this.nodes.push(new Node(ctx, {
@@ -406,7 +422,10 @@ class Utils {
                     id: id
                 }, (inputs: IO[], widgets: Widget[]) => {
                     return [inputs[0].powered];
-                }));
+                }));   
+            default:
+                madeNode = false;      
+                break;   
         }
     }
 

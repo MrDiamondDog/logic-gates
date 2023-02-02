@@ -102,6 +102,16 @@ class Utils {
         }
         return { x, y };
     }
+    static GetNodeByUUID(uuid) {
+        return this.nodes.filter((node) => {
+            return node.uuid == uuid;
+        })[0];
+    }
+    static GetConnectionByUUID(uuid) {
+        return this.ios.filter((io) => {
+            return io.uuid == uuid;
+        })[0];
+    }
     static CreateCustomNode(ctx, name, deleteAll = true, nodes = undefined) {
         let { x, y } = this.GetEmptySpace(ctx);
         let cache = this.nodes;
@@ -197,6 +207,7 @@ class Utils {
         return result;
     }
     static CreateNode(ctx, name, x = undefined, y = undefined) {
+        let madeNode = true;
         if (!x || !y) {
             x = this.GetEmptySpace(ctx).x;
             y = this.GetEmptySpace(ctx).y;
@@ -341,6 +352,9 @@ class Utils {
                 }, (inputs, widgets) => {
                     return [inputs[0].powered];
                 }));
+            default:
+                madeNode = false;
+                break;
         }
     }
     static async sleep(ms) {
@@ -358,6 +372,7 @@ Utils.footerTextColor = '#909090';
 Utils.nodes = [];
 Utils.inputs = [];
 Utils.outputs = [];
+Utils.ios = [];
 Utils.contextMenu = undefined;
 Utils.selectedNode = undefined;
 Utils.prebuiltNodes = ["input", "output", "or", "nor", "xor", "and", "xnor", "nand", "not", "comment"];

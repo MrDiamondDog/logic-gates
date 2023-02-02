@@ -8,32 +8,39 @@ class IO {
     powered: boolean = false;
     x: number = 0;
     y: number = 0;
-    parentNode: Node;
+    parentNode: string;
     deleted: boolean = false;
+    uuid: string;
 
-    connections: IO[] = [];
-    backwardConnections: IO[] = []; // connections that go backward and should not be displayed
+    connections: string[] = [];
+    backwardConnections: string[] = []; // connections that go backward and should not be displayed
     allowMultipleConnections: boolean;
 
-    constructor(name: string, isOutput: boolean, index: number, parentNode: Node) {
+    constructor(name: string, isOutput: boolean, index: number, parentNode: string) {
         this.name = name;
         this.isOutput = isOutput;
         this.index = index;
         this.parentNode = parentNode;
+        this.uuid = crypto.randomUUID();
 
         this.allowMultipleConnections = isOutput;
     }
 
+    getParentNode() {
+        return Utils.GetNodeByUUID(this.parentNode);
+    }
+
     checkPower() {
         for (let i = 0; i < this.connections.length; i++) {
-            this.connections[i].powered = this.powered;
+            console.log(Utils.ios);
+            Utils.GetConnectionByUUID(this.connections[i]).powered = this.powered;
         }
 
         if (this.isOutput) return;
         else {
             this.powered = false;
             for (let i = 0; i < this.backwardConnections.length; i++) {
-                if (this.backwardConnections[i].powered) {
+                if (Utils.GetConnectionByUUID(this.backwardConnections[i]).powered) {
                     this.powered = true;
                     break;
                 }
@@ -50,8 +57,10 @@ class IO {
         this.y = y + 45 + this.index * 25;
         Utils.circle(ctx, this.x, this.y, 5, Utils.powerColor(this.powered));
 
+
         for (let i = 0; i < this.connections.length; i++) {
-            Utils.bezierLine(ctx, this.connections[i].x, this.connections[i].y, this.x, this.y, Utils.powerColor(this.powered));
+            const connection = Utils.GetConnectionByUUID(this.connections[i]);
+            Utils.bezierLine(ctx, connection.x, connection.y, this.x, this.y, Utils.powerColor(this.powered));
         }
     }
 
@@ -62,22 +71,25 @@ class IO {
             (io.allowMultipleConnections || io.connections.length == 0) && 
             this.parentNode != io.parentNode && 
             io.parentNode != this.parentNode && 
-            !this.deleted && !io.deleted;
+            !this.deleted && !io.deleted &&
+            this.uuid != io.uuid;
     }
 
     connect(io: IO) {
         if (this.canConnect(io)) {
-            this.connections.push(io);
-            io.backwardConnections.push(this);
+            this.connections.push(io.uuid);
+            io.backwardConnections.push(this.uuid);
         }
     }
 
     delete() {
         for (let i = 0; i < this.connections.length; i++) {
-            this.connections[i].backwardConnections.splice(this.connections[i].backwardConnections.indexOf(this), 1);
+            const connection = Utils.GetConnectionByUUID(this.connections[i]);
+            connection.backwardConnections.splice(connection.backwardConnections.indexOf(this.uuid), 1);
         }
         for (let i = 0; i < this.backwardConnections.length; i++) {
-            this.backwardConnections[i].connections.splice(this.backwardConnections[i].connections.indexOf(this), 1);
+            const connection = Utils.GetConnectionByUUID(this.connections[i]);
+            connection.connections.splice(connection.connections.indexOf(this.uuid), 1);
         }
 
         this.deleted = true;

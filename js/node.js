@@ -12,17 +12,18 @@ class Node {
         this.ctx = ctx;
         this.settings = settings;
         this.title = settings.title;
+        this.uuid = crypto.randomUUID();
         if (settings.inputs[0] instanceof IO) {
             this.inputs = settings.inputs;
         }
         else {
-            this.inputs = settings.inputs.map((input, i) => new IO(input, false, i, this));
+            this.inputs = settings.inputs.map((input, i) => new IO(input, false, i, this.uuid));
         }
         if (settings.outputs[0] instanceof IO) {
             this.outputs = settings.outputs;
         }
         else {
-            this.outputs = settings.outputs.map((output, i) => new IO(output, true, i, this));
+            this.outputs = settings.outputs.map((output, i) => new IO(output, true, i, this.uuid));
         }
         this.isCustom = settings.isCustom || settings.customNodes !== undefined;
         this.customNodes = settings.customNodes || [];
@@ -41,6 +42,8 @@ class Node {
             }
             return new Widget(this.ctx, this.findIO(widget.parentIOName));
         });
+        Utils.ios.push(...this.inputs);
+        Utils.ios.push(...this.outputs);
     }
     draw() {
         this.ctx.font = '30px monospace';
@@ -95,7 +98,7 @@ class Node {
                     innerOutputs.push(this.customNodes[i]);
                 }
             }
-            for (let i = 0; i < this.inputs.length; i++) {
+            for (let i = 0; i < innerInputs.length; i++) {
                 innerInputs[i].widgets[0].setPowered(this.inputs[i].powered);
             }
             for (let i = 0; i < this.customNodes.length; i++) {
@@ -201,9 +204,11 @@ class Node {
     delete() {
         for (let i = 0; i < this.inputs.length; i++) {
             this.inputs[i].delete();
+            Utils.ios.splice(Utils.ios.indexOf(this.inputs[i]));
         }
         for (let i = 0; i < this.outputs.length; i++) {
             this.outputs[i].delete();
+            Utils.ios.splice(Utils.ios.indexOf(this.outputs[i]));
         }
         Utils.nodes.splice(Utils.nodes.indexOf(this), 1);
     }

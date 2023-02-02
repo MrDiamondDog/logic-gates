@@ -8,13 +8,22 @@
     "test-no-live": "npm i --include=dev && concurrently --kill-others \"tsc -w\"",
     "build": "npm i && tsc && babel js --out-dir js --no-comments --compact true"
   },
-  "keywords": ["Logic", "Logic Gates", "JavaScript", "Typescript"],
+  "keywords": [
+    "Logic",
+    "Logic Gates",
+    "JavaScript",
+    "Typescript"
+  ],
   "author": "MrDiamond",
   "license": "ISC",
   "dependencies": {
-    "typescript": "^4.9.4",
     "@babel/cli": "^7.20.7",
-    "@babel/core": "^7.20.12"
+    "@babel/core": "^7.20.12",
+    "@types/lodash": "^4.14.191",
+    "@types/lodash-es": "^4.17.6",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
+    "typescript": "^4.9.4"
   },
   "devDependencies": {
     "concurrently": "^7.6.0",

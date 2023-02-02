@@ -21,23 +21,27 @@ class Node {
     isCustom = false;
     customNodes: Node[] | [] = [];
     id: string | undefined;
+    uuid: string | undefined;
 
     constructor(ctx: CanvasRenderingContext2D, settings: NodeSettings, predicate: undefined | ((inputs: IO[], widgets: Widget[]) => boolean[]) = undefined) {
         this.ctx = ctx;
         this.settings = settings;
         this.title = settings.title;
+        this.uuid = crypto.randomUUID();
+
         if (settings.inputs[0] instanceof IO) {
             this.inputs = settings.inputs as IO[];
         }
         else {
-            this.inputs = settings.inputs.map((input, i) => new IO(input as string, false, i, this));
+            this.inputs = settings.inputs.map((input, i) => new IO(input as string, false, i, this.uuid as string));
         }
         if (settings.outputs[0] instanceof IO) {
             this.outputs = settings.outputs as IO[];
         }
         else {
-            this.outputs = settings.outputs.map((output, i) => new IO(output as string, true, i, this));
+            this.outputs = settings.outputs.map((output, i) => new IO(output as string, true, i, this.uuid as string));
         }
+
         this.isCustom = settings.isCustom || settings.customNodes !== undefined;
         this.customNodes = settings.customNodes || [];
         this.predicate = predicate || undefined;
@@ -57,6 +61,9 @@ class Node {
             }
             return new Widget(this.ctx, this.findIO(widget.parentIOName) as IO);
         });
+
+        Utils.ios.push(...this.inputs);
+        Utils.ios.push(...this.outputs);
     }
 
     draw() {
@@ -112,8 +119,8 @@ class Node {
         }
 
         if (this.isCustom) {
-            let innerInputs = [];
-            let innerOutputs = [];
+            let innerInputs: Node[] = [];
+            let innerOutputs: Node[] = [];
 
             for (let i = 0; i < this.customNodes.length; i++) {
                 if (this.customNodes[i].title == "Input") {
@@ -124,7 +131,7 @@ class Node {
                 }
             }
 
-            for (let i = 0; i < this.inputs.length; i++) {
+            for (let i = 0; i < innerInputs.length; i++) {
                 innerInputs[i].widgets[0].setPowered(this.inputs[i].powered);
             }
 
@@ -250,9 +257,11 @@ class Node {
     delete() {
         for (let i = 0; i < this.inputs.length; i++) {
             this.inputs[i].delete();
+            Utils.ios.splice(Utils.ios.indexOf(this.inputs[i]));
         }
         for (let i = 0; i < this.outputs.length; i++) {
             this.outputs[i].delete();
+            Utils.ios.splice(Utils.ios.indexOf(this.outputs[i]));
         }
         Utils.nodes.splice(Utils.nodes.indexOf(this), 1);
     }
