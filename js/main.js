@@ -1,10 +1,12 @@
 import Utils from "./utilities.js";
-import { ContextMenu } from "./contextmenu.js";
+import Node from "./node.js";
+import { ContextMenu, ContextMenuItem } from "./contextmenu.js";
+// @ts-ignore
 import cloneDeep from "../node_modules/lodash-es/cloneDeep.js";
-const canvas = document.getElementById('canvas');
+const canvas = document.getElementById("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 50;
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext("2d");
 ctx.fillStyle = Utils.backgroundColor;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 function Update() {
@@ -111,7 +113,7 @@ function GenerateTruthTable() {
     const parent = outputTable.parentNode;
     parent.style.display = "block";
 }
-canvas.addEventListener('mousemove', function (e) {
+canvas.addEventListener("mousemove", function (e) {
     Utils.mouse.x = e.clientX;
     Utils.mouse.y = e.clientY;
     if (Utils.mouse.clicking) {
@@ -135,7 +137,7 @@ canvas.addEventListener('mousemove', function (e) {
         }
     }
 });
-canvas.addEventListener('mousedown', function (e) {
+canvas.addEventListener("mousedown", function (e) {
     if (e.button == 0)
         Utils.mouse.clicking = true;
     // clear previous selection
@@ -152,12 +154,12 @@ canvas.addEventListener('mousedown', function (e) {
         }
     }
 });
-canvas.addEventListener('mouseup', function (e) {
+canvas.addEventListener("mouseup", function (e) {
     Utils.mouse.clicking = false;
     Utils.mouse.dragging = false;
     Utils.mouse.draggingNode = null;
 });
-canvas.addEventListener('keydown', function (e) {
+canvas.addEventListener("keydown", function (e) {
     if (e.key == "Delete") {
         if (Utils.selectedNode) {
             Utils.selectedNode.delete();
@@ -165,7 +167,7 @@ canvas.addEventListener('keydown', function (e) {
         }
     }
 });
-window.addEventListener('contextmenu', function (e) {
+window.addEventListener("contextmenu", function (e) {
     var _a;
     e.preventDefault();
     new ContextMenu(ctx, Utils.mouse.x, Utils.mouse.y, [
@@ -175,7 +177,20 @@ window.addEventListener('contextmenu', function (e) {
             if (Utils.selectedNode) {
                 Utils.selectedNode.id = text;
             }
-        }, (((_a = Utils.selectedNode) === null || _a === void 0 ? void 0 : _a.title) == "Comment") ? 20 : 5)
+        }, ((_a = Utils.selectedNode) === null || _a === void 0 ? void 0 : _a.title) == "Comment" ? 20 : 5),
+        new ContextMenuItem(document.createElement("button"), (e) => {
+            Utils.copiedNode = Utils.selectedNode;
+            return true;
+        }, "click", "Copy"),
+        new ContextMenuItem(document.createElement("button"), (e) => {
+            if (Utils.copiedNode) {
+                Utils.nodes.push(new Node(ctx, cloneDeep(Utils.copiedNode.settings), Utils.copiedNode.predicate));
+                const newNode = Utils.nodes[Utils.nodes.length - 1];
+                newNode.x = Utils.mouse.x;
+                newNode.y = Utils.mouse.y;
+            }
+            return true;
+        }, "click", "Paste"),
     ]).create();
 });
 window.onresize = function () {
@@ -186,73 +201,43 @@ const nodeSelect = document.getElementById("footer");
 for (let i = 0; i < Utils.prebuiltNodes.length; i++) {
     const button = document.createElement("button");
     button.innerText = Utils.prebuiltNodes[i];
-    button.addEventListener('click', function (e) {
+    button.addEventListener("click", function (e) {
         Utils.CreateNode(ctx, Utils.prebuiltNodes[i]);
     });
     nodeSelect.appendChild(button);
 }
 const randomNode = document.getElementById("random");
-randomNode.addEventListener('click', function (e) {
+randomNode.addEventListener("click", function (e) {
     Utils.CreateNode(ctx, Utils.prebuiltNodes[Math.floor(Math.random() * Utils.prebuiltNodes.length)]);
 });
 const generate = document.getElementById("generate");
-generate.addEventListener('click', function (e) {
+generate.addEventListener("click", function (e) {
     GenerateTruthTable();
 });
 const hidett = document.getElementById("hide-tt");
 const copytt = document.getElementById("copy-tt");
 const truthTable = document.getElementById("truth-table");
-hidett.addEventListener('click', function (e) {
+hidett.addEventListener("click", function (e) {
     truthTable.style.display = truthTable.style.display == "none" ? "block" : "none";
     this.innerHTML = truthTable.style.display == "none" ? "Show Truth Table" : "Hide Truth Table";
 });
 truthTable.style.display = "block";
 hidett.innerHTML = "Hide Truth Table";
-copytt.addEventListener('click', function (e) {
+copytt.addEventListener("click", function (e) {
     const text = Utils.tableToASCII(truthTable);
     navigator.clipboard.writeText(text);
 });
 const create = document.getElementById("create");
-create.addEventListener('click', function (e) {
+create.addEventListener("click", function (e) {
     const name = prompt("Name of Node");
     if (name == null)
         return;
     const node = Utils.CreateCustomNode(ctx, name);
-    const button = document.createElement("button");
-    button.innerText = name;
-    button.addEventListener("click", () => {
-        const nodes = cloneDeep(node.customNodes);
-        console.log(nodes[0]);
-        Utils.CreateCustomNode(ctx, name, false, nodes);
-    });
-    nodeSelect.appendChild(button);
 });
 const mobileWarning = document.getElementById("mobile-warning");
 if (Utils.mobileAndTabletCheck())
     mobileWarning.style.display = "block";
 const clear = document.getElementById("clear");
-clear.addEventListener('click', function (e) {
+clear.addEventListener("click", function (e) {
     Utils.nodes = [];
-});
-const save = document.getElementById("save");
-save.addEventListener('click', function (e) {
-    //todo
-});
-const load = document.getElementById("load");
-load.addEventListener('click', function (e) {
-    const file = document.createElement("input");
-    file.style.display = "none";
-    file.type = "file";
-    file.click();
-    file.onchange = function (e) {
-        if (file.files != null) {
-            const fr = new FileReader();
-            fr.onload = function (evt) {
-                if (evt.target != null) {
-                    // todo
-                }
-            };
-            fr.readAsText(file.files[0]);
-        }
-    };
 });

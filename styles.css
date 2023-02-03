@@ -8,7 +8,7 @@
 }
 
 * {
-    font-family: 'Roboto', monospace;
+    font-family: "Roboto", monospace;
     color: white;
     box-sizing: border-box;
     user-select: none;
@@ -89,7 +89,8 @@ button:active {
     background-color: var(--primary);
 }
 
-input, textarea {
+input,
+textarea {
     background-color: var(--primary);
     color: var(--foreground);
     border: 0;
@@ -104,15 +105,18 @@ input, textarea {
     border-radius: 3px;
 }
 
-input:hover, textarea:hover {
+input:hover,
+textarea:hover {
     background-color: var(--secondary);
 }
 
-input:active, textarea:active {
+input:active,
+textarea:active {
     background-color: var(--primary);
 }
 
-input::placeholder, textarea::placeholder{
+input::placeholder,
+textarea::placeholder {
     color: var(--placeholder);
 }
 
@@ -301,7 +305,7 @@ option {
 
 #suggest-form {
     position: absolute;
-    width: 50vw;
+    width: 20rem;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -309,11 +313,13 @@ option {
     padding: 10px;
 }
 
-#suggest-form button, #suggest-form textarea {
+#suggest-form button,
+#suggest-form textarea {
     background-color: var(--secondary);
 }
 
-#suggest-form button:active, #suggest-form textarea:active {
+#suggest-form button:active,
+#suggest-form textarea:active {
     background-color: var(--tertiary);
 }
 

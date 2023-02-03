@@ -2,11 +2,11 @@ import Utils from "./utilities.js";
 
 export class ContextMenu {
     ctx: CanvasRenderingContext2D;
-    x : number;
-    y : number;
-    items : ContextMenuItem[];
+    x: number;
+    y: number;
+    items: ContextMenuItem[];
 
-    constructor(ctx: CanvasRenderingContext2D, x : number, y : number, items : ContextMenuItem[]) {
+    constructor(ctx: CanvasRenderingContext2D, x: number, y: number, items: ContextMenuItem[]) {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -29,7 +29,7 @@ export class ContextMenu {
         context.id = "context";
         context.style.left = this.x + "px";
         context.style.top = this.y + "px";
-        
+
         for (let i = 0; i < this.items.length; i++) {
             const item = this.items[i];
             context.appendChild(item.element);
@@ -37,7 +37,7 @@ export class ContextMenu {
 
         document.body.appendChild(context);
 
-        setInterval(this.update, 1000 / 60)
+        setInterval(this.update, 1000 / 60);
     }
 
     close() {
@@ -46,14 +46,19 @@ export class ContextMenu {
 }
 
 export class ContextMenuItem {
-    element : HTMLElement;
-    callback : (...params : any) => boolean;
+    element: HTMLElement;
+    callback: (...params: any) => boolean;
     parent: ContextMenu | undefined;
+    name: string | undefined;
 
-    constructor(element : HTMLElement, callback : (...params: any) => boolean, eventListener: string = "click") {
+    constructor(element: HTMLElement, callback: (...params: any) => boolean, eventListener: string = "click", name: string | undefined = undefined) {
         this.element = element;
         this.callback = callback;
-        this.element.addEventListener(eventListener, (...params) => { 
+        this.name = name;
+        
+        if (this.name) this.element.innerHTML = this.name;
+
+        this.element.addEventListener(eventListener, (...params) => {
             const result: boolean = this.callback(params);
             if (result) this.parent?.close();
         });

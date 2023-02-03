@@ -1,7 +1,7 @@
-import IO from './io.js';
-import Tooltip from './tooltip.js';
-import Utils from './utilities.js';
-import { Widget, ButtonWidget } from './widgets.js';
+import IO from "./io.js";
+import Tooltip from "./tooltip.js";
+import Utils from "./utilities.js";
+import { Widget, ButtonWidget } from "./widgets.js";
 class Node {
     constructor(ctx, settings, predicate = undefined) {
         this.selected = false;
@@ -33,11 +33,11 @@ class Node {
         this.tooltip = settings.tooltip;
         this.widgetOptions = settings.widgetOptions || [];
         this.id = settings.id || undefined;
-        this.ctx.font = '30px monospace';
+        this.ctx.font = "30px monospace";
         this.width = Utils.getTextWidth(this.ctx, this.title) + 20;
         this.height = Math.max(this.inputs.length * 25, this.outputs.length * 25) + 35;
         this.widgets = this.widgetOptions.map((widget, i) => {
-            if (widget.type === 'button') {
+            if (widget.type === "button") {
                 return new ButtonWidget(this.ctx, this.findIO(widget.parentIOName));
             }
             return new Widget(this.ctx, this.findIO(widget.parentIOName));
@@ -46,7 +46,7 @@ class Node {
         Utils.ios.push(...this.outputs);
     }
     draw() {
-        this.ctx.font = '30px monospace';
+        this.ctx.font = "30px monospace";
         // Draw the node
         this.ctx.fillStyle = Utils.accentColor;
         this.ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -102,14 +102,14 @@ class Node {
                 innerInputs[i].widgets[0].setPowered(this.inputs[i].powered);
             }
             for (let i = 0; i < this.customNodes.length; i++) {
-                this.customNodes[i].update(false);
+                this.customNodes[i].update(false); //
             }
             for (let i = 0; i < this.outputs.length; i++) {
                 this.outputs[i].powered = innerOutputs[i].inputs[0].powered;
             }
             // make sure nested custom nodes are updated
             for (let i = 0; i < this.customNodes.length; i++) {
-                this.customNodes[i].update(false);
+                this.customNodes[i].update(false); //
             }
         }
         for (let i = 0; i < this.inputs.length; i++) {
@@ -159,7 +159,7 @@ class Node {
                 }
             }
             // Dragging IO Logic
-            if (((Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput) || Utils.mouse.draggingIO) && !Utils.mouse.draggingNode) {
+            if ((Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput || Utils.mouse.draggingIO) && !Utils.mouse.draggingNode) {
                 if (Utils.mouse.clicking && !Utils.mouse.draggingIO) {
                     Utils.mouse.draggingIO = Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput;
                 }
@@ -204,11 +204,9 @@ class Node {
     delete() {
         for (let i = 0; i < this.inputs.length; i++) {
             this.inputs[i].delete();
-            Utils.ios.splice(Utils.ios.indexOf(this.inputs[i]));
         }
         for (let i = 0; i < this.outputs.length; i++) {
             this.outputs[i].delete();
-            Utils.ios.splice(Utils.ios.indexOf(this.outputs[i]));
         }
         Utils.nodes.splice(Utils.nodes.indexOf(this), 1);
     }

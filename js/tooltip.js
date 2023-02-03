@@ -5,7 +5,7 @@ class Tooltip {
     }
     draw(ctx, x, y) {
         const height = Utils.getTextHeight(ctx, this.text) + 20;
-        ctx.font = '20px monospace';
+        ctx.font = "20px monospace";
         ctx.fillStyle = Utils.accentColor2;
         ctx.fillRect(x, y - height, Utils.getTextWidth(ctx, this.text) + 20, height);
         ctx.fillStyle = Utils.textColor;

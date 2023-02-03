@@ -35,9 +35,12 @@ export class ContextMenu {
     }
 }
 export class ContextMenuItem {
-    constructor(element, callback, eventListener = "click") {
+    constructor(element, callback, eventListener = "click", name = undefined) {
         this.element = element;
         this.callback = callback;
+        this.name = name;
+        if (this.name)
+            this.element.innerHTML = this.name;
         this.element.addEventListener(eventListener, (...params) => {
             var _a;
             const result = this.callback(params);
