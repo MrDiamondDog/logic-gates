@@ -1,8 +1,6 @@
 import Utils from "./utilities.js";
 import Node from "./node.js";
 import { ContextMenu, ContextMenuItem } from "./contextmenu.js";
-// @ts-ignore
-import cloneDeep from "../node_modules/lodash-es/cloneDeep.js";
 const canvas = document.getElementById("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 50;
@@ -184,7 +182,7 @@ window.addEventListener("contextmenu", function (e) {
         }, "click", "Copy"),
         new ContextMenuItem(document.createElement("button"), (e) => {
             if (Utils.copiedNode) {
-                Utils.nodes.push(new Node(ctx, cloneDeep(Utils.copiedNode.settings), Utils.copiedNode.predicate));
+                Utils.nodes.push(new Node(ctx, Utils.copiedNode.settings, Utils.copiedNode.predicate));
                 const newNode = Utils.nodes[Utils.nodes.length - 1];
                 newNode.x = Utils.mouse.x;
                 newNode.y = Utils.mouse.y;
