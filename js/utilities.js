@@ -71,11 +71,11 @@ class Utils {
     static rectIntersectsRect(x1, y1, w1, h1, x2, y2, w2, h2) {
         return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
     }
-    static bezierLine(ctx, x1, y1, x2, y2, stroke) {
+    static line(ctx, x1, y1, x2, y2, stroke) {
         ctx.strokeStyle = stroke;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
-        ctx.bezierCurveTo(x1 - 50, y1, x2 + 50, y2, x2, y2);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
     }
     static download(json, fileName) {
@@ -209,7 +209,6 @@ class Utils {
         return result;
     }
     static CreateNode(ctx, name, x = undefined, y = undefined) {
-        let madeNode = true;
         if (!x || !y) {
             x = this.GetEmptySpace(ctx).x;
             y = this.GetEmptySpace(ctx).y;
@@ -354,9 +353,6 @@ class Utils {
                 }, (inputs, widgets) => {
                     return [inputs[0].powered];
                 }));
-            default:
-                madeNode = false;
-                break;
         }
     }
     static async sleep(ms) {

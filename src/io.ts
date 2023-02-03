@@ -16,6 +16,13 @@ class IO {
     backwardConnections: string[] = []; // connections that go backward and should not be displayed
     allowMultipleConnections: boolean;
 
+    /**
+     * Creates a new Port
+     * @param name Name of the port
+     * @param isOutput Is the port an output
+     * @param index Index of the port
+     * @param parentNode ID of the parent node
+     */
     constructor(name: string, isOutput: boolean, index: number, parentNode: string) {
         this.name = name;
         this.isOutput = isOutput;
@@ -59,7 +66,7 @@ class IO {
 
         for (let i = 0; i < this.connections.length; i++) {
             const connection = Utils.GetIOByUUID(this.connections[i]);
-            Utils.bezierLine(ctx, connection.x, connection.y, this.x, this.y, Utils.powerColor(this.powered));
+            Utils.line(ctx, connection.x, connection.y, this.x, this.y, Utils.powerColor(this.powered));
         }
     }
 

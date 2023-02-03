@@ -131,11 +131,11 @@ class Utils {
         return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
     }
 
-    static bezierLine(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, stroke: string) {
+    static line(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, stroke: string) {
         ctx.strokeStyle = stroke;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
-        ctx.bezierCurveTo(x1 - 50, y1, x2 + 50, y2, x2, y2);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
     }
 
@@ -288,8 +288,6 @@ class Utils {
     }
 
     static CreateNode(ctx: CanvasRenderingContext2D, name: string, x: number | undefined = undefined, y: number | undefined = undefined) {
-        let madeNode = true;
-
         if (!x || !y) {
             x = this.GetEmptySpace(ctx).x;
             y = this.GetEmptySpace(ctx).y;
@@ -495,9 +493,6 @@ class Utils {
                         }
                     )
                 );
-            default:
-                madeNode = false;
-                break;
         }
     }
 

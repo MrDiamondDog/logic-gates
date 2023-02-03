@@ -3,6 +3,12 @@ import Tooltip from "./tooltip.js";
 import Utils from "./utilities.js";
 import { Widget, ButtonWidget } from "./widgets.js";
 class Node {
+    /**
+     * Creates a new Node
+     * @param {CanvasRenderingContext2D} ctx - The canvas context
+     * @param {NodeSettings} settings - The node settings
+     * @param {function} [predicate = undefined] - If defined, the predicate function will be called every time the node is updated, and determines which inputs are powered. Should return an array of booleans, which coorespond to the outputs.
+     */
     constructor(ctx, settings, predicate = undefined) {
         this.selected = false;
         this.widgetOptions = [];
@@ -45,6 +51,9 @@ class Node {
         Utils.ios.push(...this.inputs);
         Utils.ios.push(...this.outputs);
     }
+    /**
+     * Draws the node and its children
+     */
     draw() {
         this.ctx.font = "30px monospace";
         // Draw the node
@@ -76,7 +85,11 @@ class Node {
         if (this.id)
             this.ctx.fillText(this.id, this.x + this.width / 2 - Utils.getTextWidth(this.ctx, this.id) / 2, this.y + this.height - 7);
     }
-    update(notCustom = true) {
+    /**
+     * Updates the node and its children
+     * @param draw - Whether or not to draw the node after updating
+     */
+    update(draw = true) {
         if (this.predicate) {
             const result = this.predicate(this.inputs, this.widgets);
             for (let i = 0; i < this.outputs.length; i++) {
@@ -118,7 +131,7 @@ class Node {
         for (let i = 0; i < this.outputs.length; i++) {
             this.outputs[i].update();
         }
-        if (notCustom) {
+        if (draw) {
             this.draw();
             const hoveringNode = Utils.rectContainsPoint(Utils.mouse.x, Utils.mouse.y, this.x, this.y, this.width, this.height);
             // Widget logic
@@ -164,7 +177,8 @@ class Node {
                     Utils.mouse.draggingIO = Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput;
                 }
                 if (Utils.mouse.draggingIO) {
-                    Utils.bezierLine(this.ctx, Utils.mouse.x, Utils.mouse.y, Utils.mouse.draggingIO.x, Utils.mouse.draggingIO.y, Utils.textColor);
+                    this.ctx.lineWidth = 4;
+                    Utils.line(this.ctx, Utils.mouse.x, Utils.mouse.y, Utils.mouse.draggingIO.x, Utils.mouse.draggingIO.y, Utils.textColor);
                 }
                 if (!Utils.mouse.clicking && Utils.mouse.draggingIO) {
                     if (Utils.mouse.hoveringInput) {
@@ -178,16 +192,40 @@ class Node {
             }
         }
     }
+    /**
+     * Moves the node to a different position.
+     * @param {number} x - x position
+     * @param {number} y - y position
+     */
     move(x, y) {
         this.x = x;
         this.y = y;
     }
+    /**
+     * Checks if the node contains x and y.
+     * @param {number} x - x position
+     * @param {number} y - y position
+     * @returns {boolean} - true if the node contains x and y
+     */
     contains(x, y) {
         return Utils.rectContainsPoint(x, y, this.x, this.y, this.width, this.height);
     }
+    /**
+     * Checks if the node intersects with a rectangle.
+     * @param x - top-left x of the rectangle
+     * @param y - top-left y of the rectangle
+     * @param x2 - bottom-right x of the rectangle
+     * @param y2 - bottom-right y of the rectangle
+     * @returns {boolean} - true if the node intersects with the rectangle
+     */
     intersects(x, y, x2, y2) {
         return Utils.rectIntersectsRect(x, y, x2, y2, this.x, this.y, this.width, this.height);
     }
+    /**
+     * Finds an IO by name.
+     * @param name - name of the IO
+     * @returns {IO | undefined} - the IO if found, undefined if not found
+     */
     findIO(name) {
         for (let i = 0; i < this.inputs.length; i++) {
             if (this.inputs[i].name === name) {
@@ -201,6 +239,9 @@ class Node {
         }
         return undefined;
     }
+    /**
+     * Deletes the node.
+     */
     delete() {
         for (let i = 0; i < this.inputs.length; i++) {
             this.inputs[i].delete();

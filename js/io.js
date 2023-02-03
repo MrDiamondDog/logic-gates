@@ -1,5 +1,12 @@
 import Utils from "./utilities.js";
 class IO {
+    /**
+     * Creates a new Port
+     * @param name Name of the port
+     * @param isOutput Is the port an output
+     * @param index Index of the port
+     * @param parentNode ID of the parent node
+     */
     constructor(name, isOutput, index, parentNode) {
         this.powered = false;
         this.x = 0;
@@ -43,7 +50,7 @@ class IO {
         Utils.circle(ctx, this.x, this.y, 5, Utils.powerColor(this.powered));
         for (let i = 0; i < this.connections.length; i++) {
             const connection = Utils.GetIOByUUID(this.connections[i]);
-            Utils.bezierLine(ctx, connection.x, connection.y, this.x, this.y, Utils.powerColor(this.powered));
+            Utils.line(ctx, connection.x, connection.y, this.x, this.y, Utils.powerColor(this.powered));
         }
     }
     canConnect(io) {

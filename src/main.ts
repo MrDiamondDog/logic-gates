@@ -200,19 +200,29 @@ window.addEventListener("contextmenu", function (e) {
             },
             Utils.selectedNode?.title == "Comment" ? 20 : 5
         ),
-        new ContextMenuItem(document.createElement("button"), (e) => {
-            Utils.copiedNode = Utils.selectedNode;
-            return true;
-        }, "click", "Copy"),
-        new ContextMenuItem(document.createElement("button"), (e) => {
-            if (Utils.copiedNode) {
-                Utils.nodes.push(new Node(ctx, Utils.copiedNode.settings, Utils.copiedNode.predicate));
-                const newNode = Utils.nodes[Utils.nodes.length - 1];
-                newNode.x = Utils.mouse.x;
-                newNode.y = Utils.mouse.y;
-            }
-            return true;
-        }, "click", "Paste"),
+        new ContextMenuItem(
+            document.createElement("button"),
+            (e) => {
+                Utils.copiedNode = Utils.selectedNode;
+                return true;
+            },
+            "click",
+            "Copy"
+        ),
+        new ContextMenuItem(
+            document.createElement("button"),
+            (e) => {
+                if (Utils.copiedNode) {
+                    Utils.nodes.push(new Node(ctx, Utils.copiedNode.settings, Utils.copiedNode.predicate));
+                    const newNode = Utils.nodes[Utils.nodes.length - 1];
+                    newNode.x = Utils.mouse.x;
+                    newNode.y = Utils.mouse.y;
+                }
+                return true;
+            },
+            "click",
+            "Paste"
+        )
     ]).create();
 });
 window.onresize = function () {
@@ -258,7 +268,7 @@ const create = document.getElementById("create") as HTMLButtonElement;
 create.addEventListener("click", function (e) {
     const name = prompt("Name of Node");
     if (name == null) return;
-    const node: Node = Utils.CreateCustomNode(ctx, name);
+    Utils.CreateCustomNode(ctx, name);
 });
 
 const mobileWarning = document.getElementById("mobile-warning") as HTMLDivElement;

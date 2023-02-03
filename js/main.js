@@ -188,7 +188,7 @@ window.addEventListener("contextmenu", function (e) {
                 newNode.y = Utils.mouse.y;
             }
             return true;
-        }, "click", "Paste"),
+        }, "click", "Paste")
     ]).create();
 });
 window.onresize = function () {
@@ -230,7 +230,7 @@ create.addEventListener("click", function (e) {
     const name = prompt("Name of Node");
     if (name == null)
         return;
-    const node = Utils.CreateCustomNode(ctx, name);
+    Utils.CreateCustomNode(ctx, name);
 });
 const mobileWarning = document.getElementById("mobile-warning");
 if (Utils.mobileAndTabletCheck())
