@@ -266,6 +266,10 @@ copytt.addEventListener("click", function (e) {
 
 const create = document.getElementById("create") as HTMLButtonElement;
 create.addEventListener("click", function (e) {
+    if (Utils.inputs.length == 0 || Utils.outputs.length == 0) {
+        alert("You need at least one input and one output to create a node.");
+        return;
+    }
     const name = prompt("Name of Node");
     if (name == null) return;
     Utils.CreateCustomNode(ctx, name);
