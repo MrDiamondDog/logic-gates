@@ -33,81 +33,6 @@ async function Update() {
     }
 }
 await Update();
-async function GenerateTruthTable() {
-    if (Utils.inputs.length == 0 || Utils.outputs.length == 0) {
-        alert("You need at least one input and one output to generate a truth table.");
-        return;
-    }
-    const truthTable = [];
-    new Promise(async (resolve) => {
-        for (let i = 0; i < Utils.inputs.length; i++) {
-            Utils.inputs[i].widgets[0].setPowered(false);
-        }
-        for (let i = 0; i < Utils.nodes.length; i++) {
-            const node = Utils.nodes[i];
-            await node.update();
-        }
-        // go through all combinations of inputs on/off and get the outputs
-        for (let i = 0; i < Math.pow(2, Utils.inputs.length); i++) {
-            const row = [];
-            // set the inputs, powered or not
-            for (let j = 0; j < Utils.inputs.length; j++) {
-                const input = Utils.inputs[j];
-                const powered = (i & (1 << j)) != 0;
-                input.widgets[0].setPowered(powered);
-            }
-            // update the nodes
-            for (let j = 0; j < Utils.nodes.length; j++) {
-                const node = Utils.nodes[j];
-                await node.update();
-            }
-            for (let j = 0; j < Utils.inputs.length; j++) {
-                const input = Utils.inputs[j];
-                row.push(input.widgets[0].powered);
-            }
-            for (let j = 0; j < Utils.outputs.length; j++) {
-                const output = Utils.outputs[j];
-                row.push(output.inputs[0].powered);
-            }
-            truthTable.push(row);
-        }
-        resolve(1);
-    }).then(() => {
-        const outputTable = document.getElementById("truth-table");
-        outputTable.innerHTML = "";
-        const header = document.createElement("tr");
-        for (let i = 0; i < Utils.inputs.length; i++) {
-            const td = document.createElement("td");
-            td.innerText = Utils.inputs[i].id;
-            header.appendChild(td);
-        }
-        for (let i = 0; i < Utils.outputs.length; i++) {
-            const td = document.createElement("td");
-            td.innerText = Utils.outputs[i].id;
-            header.appendChild(td);
-        }
-        outputTable.appendChild(header);
-        for (let i = 0; i < truthTable.length; i++) {
-            const row = truthTable[i];
-            const tr = document.createElement("tr");
-            for (let j = 0; j < row.length; j++) {
-                const td = document.createElement("td");
-                td.innerText = row[j] ? "1" : "0";
-                td.className = row[j] ? "tt-1" : "tt-0";
-                tr.appendChild(td);
-            }
-            outputTable.appendChild(tr);
-        }
-        outputTable.style.display = "block";
-        hidett.innerHTML = "Hide Truth Table";
-        const parent = outputTable.parentNode;
-        parent.style.display = "block";
-        if (Utils.debug) {
-            Utils.Log(Utils.LogLevel.Debug, "Generated truth table:");
-            console.table(truthTable);
-        }
-    });
-}
 canvas.addEventListener("mousemove", function (e) {
     Utils.mouse.x = e.clientX;
     Utils.mouse.y = e.clientY;
@@ -146,7 +71,7 @@ canvas.addEventListener("mousedown", function (e) {
             Utils.selectedNode = node;
             node.selected = true;
             if (Utils.debug)
-                Utils.Log(Utils.LogLevel.Debug, `Selected node ${node.title} ${node.id} ${node.uuid}`);
+                Utils.Log(Utils.LogLevel.Debug, `Selected node ${node.title}${node.id ? ` ${node.id} ` : ""}(${node.uuid})`);
             break;
         }
     }
@@ -209,7 +134,7 @@ randomNode.addEventListener("click", function (e) {
 });
 const generate = document.getElementById("generate");
 generate.addEventListener("click", async function (e) {
-    await GenerateTruthTable();
+    await Utils.GenerateTruthTable();
 });
 const hidett = document.getElementById("hide-tt");
 const copytt = document.getElementById("copy-tt");

@@ -3,19 +3,19 @@
     "name": "Logic Gate Simulator",
     "icons": [
         {
-            "src": "node.png",
+            "src": "images/node.png",
             "type": "image/png",
             "sizes": "180x180",
             "purpose": "any maskable"
         },
         {
-            "src": "node192.png",
+            "src": "images/node192.png",
             "type": "image/png",
             "sizes": "192x192",
             "purpose": "any maskable"
         },
         {
-            "src": "node512.png",
+            "src": "images/node512.png",
             "type": "image/png",
             "sizes": "512x512",
             "purpose": "any maskable"
@@ -32,7 +32,7 @@
     "description": "A logic gate simulator made with HTML5 canvas and JavaScript.",
     "screenshots": [
         {
-            "src": "Screenshot.png",
+            "src": "images/Screenshot.png",
             "type": "image/png",
             "sizes": "2559x1286",
             "form_factor": "wide"

@@ -217,10 +217,17 @@ class Node {
                 if ((Utils.mouse.hoveringInput || Utils.mouse.hoveringOutput || Utils.mouse.draggingIO) && !Utils.mouse.draggingNode) {
                     if (Utils.mouse.clicking && !Utils.mouse.draggingIO) {
                         Utils.mouse.draggingIO = Utils.mouse.hoveringInput || (Utils.mouse.hoveringOutput as IO);
-                        if (Utils.debug) Utils.Log(Utils.LogLevel.Debug, `Dragging IO ${Utils.mouse.draggingIO.name} ${Utils.mouse.draggingIO.uuid}`)
+                        if (Utils.debug) Utils.Log(Utils.LogLevel.Debug, `Dragging IO ${Utils.mouse.draggingIO.name} (${Utils.mouse.draggingIO.uuid})`);
                     }
 
                     if (Utils.mouse.draggingIO) {
+                        if (!Utils.mouse.draggingIO.allowMultipleConnections) {
+                            const io = Utils.mouse.draggingIO;
+                            const backwardIO = Utils.GetIOByUUID(io.backwardConnections[0]);
+                            io.disconnect();
+                            Utils.mouse.draggingIO = backwardIO;
+                        }
+
                         this.ctx.lineWidth = 4;
                         Utils.line(this.ctx, Utils.mouse.x, Utils.mouse.y, Utils.mouse.draggingIO.x, Utils.mouse.draggingIO.y, Utils.textColor);
                     }
@@ -235,7 +242,7 @@ class Node {
                     }
                 }
             }
-            
+
             resolve(1);
         });
     }

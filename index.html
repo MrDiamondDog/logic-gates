@@ -6,15 +6,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Logic Gate Sim</title>
         <link rel="stylesheet" href="styles.css" />
-        <link rel="icon" href="/node.png" />
-        <link rel="apple-touch-icon" href="/node.png">
+        <link rel="icon" href="images/node.png" />
+        <link rel="apple-touch-icon" href="images/node.png">
         <meta name="theme-color" content="#212d38"/>
         <meta name="description" content="A logic gate simulator made with HTML5 canvas and JavaScript.">
         <link rel="manifest" href="manifest.json">
     </head>
     <body>
         <canvas id="canvas" tabindex="0"></canvas>
-        <img id="github-img" src="git.png" alt="github logo" onclick="window.location.href='https://github.com/MrDiamondDog/logic-gates'" />
+        <img id="github-img" src="images/git.png" alt="github logo" onclick="window.location.href='https://github.com/MrDiamondDog/logic-gates'" />
         <div id="menu">
             <button id="create">Create</button>
             <button id="generate">Truth Table</button>
@@ -49,7 +49,7 @@
             <button onclick="document.getElementById('suggest-form').style.display = 'block'; document.getElementById('settings').style.display = 'none'" class="button-menu">Suggest</button>
             <br>
             <br>
-            <label for="debug"><input type="checkbox" id="debug" name="debug"/> Debug Mode</label>
+            <label for="debug"><input type="checkbox" id="debug" name="debug"/> Debug Mode (DevTools)</label>
             <br>
             <br>
             <button onclick="document.getElementById('settings').style.display = 'none'" class="button-menu">Close</button>

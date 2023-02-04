@@ -91,11 +91,15 @@ class IO {
         if (this.canConnect(io)) {
             this.connections.push(io.uuid);
             io.backwardConnections.push(this.uuid);
+
+            if (Utils.debug) Utils.Log(Utils.LogLevel.Debug, `Connected ${this.name} (${this.uuid}) to ${io.name} (${io.uuid})`);
+        } else {
+            if (Utils.debug) Utils.Log(Utils.LogLevel.Debug, `Cannot connect ${this.name} (${this.uuid}) to ${io.name} (${io.uuid})`);
         }
     }
 
-    delete() {
-        Utils.ios.splice(Utils.ios.indexOf(this), 1);
+    disconnect() {
+        if (Utils.debug) Utils.Log(Utils.LogLevel.Debug, `Disconnected IO ${this.name} (${this.uuid}) from ${this.connections.length + this.backwardConnections.length} connection(s)`);
 
         for (let i = 0; i < this.connections.length; i++) {
             const connection = Utils.GetIOByUUID(this.connections[i]);
@@ -106,6 +110,15 @@ class IO {
             const connection = Utils.GetIOByUUID(this.backwardConnections[i]);
             connection.connections.splice(connection.connections.indexOf(this.uuid), 1);
         }
+
+        this.connections = [];
+        this.backwardConnections = [];
+    }
+
+    delete() {
+        Utils.ios.splice(Utils.ios.indexOf(this), 1);
+
+        this.disconnect();
 
         this.deleted = true;
     }
