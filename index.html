@@ -6,9 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Logic Gate Sim</title>
         <link rel="stylesheet" href="styles.css" />
+        <link rel="icon" href="/node.png" />
+        <link rel="apple-touch-icon" href="/node.png">
+        <meta name="theme-color" content="#212d38"/>
+        <meta name="description" content="A logic gate simulator made with HTML5 canvas and JavaScript.">
     </head>
     <body>
-        <canvas id="canvas" tabindex="1"></canvas>
+        <canvas id="canvas" tabindex="0"></canvas>
         <img id="github-img" src="git.png" alt="github logo" onclick="window.location.href='https://github.com/MrDiamondDog/logic-gates'" />
         <div id="menu">
             <button id="create">Create</button>
@@ -39,7 +43,7 @@
                 <button type="button" onclick="document.getElementById('suggest-form').style.display = 'none'" class="button-menu">Cancel</button>
             </form>
         </div>
-        <div id="settings">
+        <div id="settings" style="display:none">
             <h1>Settings</h1>
             <button onclick="document.getElementById('suggest-form').style.display = 'block'; document.getElementById('settings').style.display = 'none'" class="button-menu">Suggest</button>
             <br>
