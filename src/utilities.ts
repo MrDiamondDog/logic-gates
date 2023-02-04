@@ -28,6 +28,8 @@ class Utils {
 
     static prebuiltNodes = ["input", "output", "or", "nor", "xor", "and", "xnor", "nand", "not", "comment"];
 
+    static debug = false;
+
     static powerColor(powered: boolean) {
         return !powered ? "#84423f" : "#34c13b";
     }
@@ -153,15 +155,17 @@ class Utils {
                 let node = this.nodes[i];
                 if (this.rectIntersectsRect(x, y, 200, 200, node.x, node.y, node.width, node.height)) {
                     intersects = true;
-                    y += 50;
-                    if (y > ctx.canvas.height - 100) {
-                        y = 100;
-                        x += 50;
+                    x += 50;
+                    if (x > ctx.canvas.width - 100) {
+                        x = 100;
+                        y += 50;
                     }
                     break;
                 }
             }
         }
+
+        if (this.debug) this.Log(Utils.LogLevel.Debug, `Empty space found at ${x}, ${y}`); 
 
         return {x, y};
     }
@@ -182,6 +186,8 @@ class Utils {
         let {x, y} = this.GetEmptySpace(ctx);
         let cache = this.nodes as Node[];
         if (deleteAll) this.nodes = [];
+
+        if (this.debug) this.Log(Utils.LogLevel.Debug, `Creating custom node with name "${name}" at ${x}, ${y}`);
 
         var inputs: Node[] = [];
         var outputs: Node[] = [];
@@ -222,6 +228,10 @@ class Utils {
         this.nodes.push(newNode);
 
         return newNode;
+    }
+
+    static async sleep(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     // thanks chatgpt
@@ -284,6 +294,8 @@ class Utils {
         }
         result += "\n";
 
+        if (this.debug) this.Log(Utils.LogLevel.Debug, `Converted table to ASCII:\n${result}`) 
+
         return result;
     }
 
@@ -293,6 +305,8 @@ class Utils {
             y = this.GetEmptySpace(ctx).y;
         }
         let id = this.letters[name == "input" ? this.inputs.length : name == "output" ? this.outputs.length + 13 : 26];
+
+        if (this.debug) this.Log(Utils.LogLevel.Debug, `Creating node with name "${name}" at ${x}, ${y}`);
 
         switch (name) {
             case "or":
@@ -496,11 +510,7 @@ class Utils {
         }
     }
 
-    static async sleep(ms: number) {
-        return Promise.resolve(setTimeout(() => {}, ms));
-    }
-
-    static mobileAndTabletCheck = function () {
+    static mobileAndTabletCheck() {
         let check = false;
         (function (a) {
             if (
@@ -513,7 +523,33 @@ class Utils {
             )
                 check = true;
         })(navigator.userAgent || navigator.vendor);
+
+        if (this.debug) this.Log(Utils.LogLevel.Debug, `IsMobile: ${check}`, false);
+
         return check;
+    };
+
+    static Log(logLevel: Utils.LogLevel, message: string, showTime: boolean = true) {
+        const timeStr = showTime ? new Date().toLocaleTimeString() + " " : "";
+        console.info(`%c${timeStr}[%c${Utils.LogLevel[logLevel]}%c]%c ${message}`, "font-weight: bold; color: #999", `font-weight: bold; color: ${Utils.LogLevelColors[logLevel]}`, "font-weight: bold; color: #999", "font-weight: normal; color: #fff");
+    };
+}
+
+namespace Utils {
+    export enum LogLevel {
+        Debug,
+        Info,
+        Warning,
+        Error,
+        Fatal
+    }
+
+    export const LogLevelColors = {
+        [LogLevel.Debug]: "#999",
+        [LogLevel.Info]: "#fff",
+        [LogLevel.Warning]: "#FFA500",
+        [LogLevel.Error]: "#FF0000",
+        [LogLevel.Fatal]: "#FF0000"
     };
 }
 

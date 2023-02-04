@@ -89,6 +89,18 @@ button:active {
     background-color: var(--primary);
 }
 
+.button-menu {
+    background-color: var(--secondary);
+}
+
+.button-menu:hover {
+    background-color: var(--tertiary);
+}
+
+.button-menu:active {
+    background-color: var(--secondary);
+}
+
 input,
 textarea {
     background-color: var(--primary);
@@ -118,6 +130,32 @@ textarea:active {
 input::placeholder,
 textarea::placeholder {
     color: var(--placeholder);
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+label {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.input-menu {
+    background-color: var(--secondary);
+}
+
+.input-menu:hover {
+    background-color: var(--tertiary);
+}
+
+.input-menu:active {
+    background-color: var(--secondary);
 }
 
 .button-sm {
@@ -313,17 +351,18 @@ option {
     padding: 10px;
 }
 
-#suggest-form button,
-#suggest-form textarea {
-    background-color: var(--secondary);
-}
-
-#suggest-form button:active,
-#suggest-form textarea:active {
-    background-color: var(--tertiary);
-}
-
 #suggestion {
     height: 100px;
     vertical-align: text-top;
+}
+
+#settings {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20rem;
+    transform: translate(-50%, -50%);
+    background-color: var(--primary);
+    z-index: 4;
+    padding: 10px;
 }

@@ -37,26 +37,27 @@ class IO {
         return Utils.GetNodeByUUID(this.parentNode);
     }
 
-    checkPower() {
-        for (let i = 0; i < this.connections.length; i++) {
-            const connection = Utils.GetIOByUUID(this.connections[i]);
-            connection.powered = this.powered;
-        }
+    async update() {
+        return new Promise(async (resolve) => {
+            for (let i = 0; i < this.connections.length; i++) {
+                const connection = Utils.GetIOByUUID(this.connections[i]);
+                connection.powered = this.powered;
+                await connection.update();
+            }
 
-        if (this.isOutput) return;
-        else {
-            this.powered = false;
-            for (let i = 0; i < this.backwardConnections.length; i++) {
-                if (Utils.GetIOByUUID(this.backwardConnections[i]).powered) {
-                    this.powered = true;
-                    break;
+            if (this.isOutput) resolve(0);
+            else {
+                this.powered = false;
+                for (let i = 0; i < this.backwardConnections.length; i++) {
+                    if (Utils.GetIOByUUID(this.backwardConnections[i]).powered) {
+                        this.powered = true;
+                        break;
+                    }
                 }
             }
-        }
-    }
 
-    update() {
-        this.checkPower();
+            resolve(1);
+        });
     }
 
     draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
@@ -66,6 +67,7 @@ class IO {
 
         for (let i = 0; i < this.connections.length; i++) {
             const connection = Utils.GetIOByUUID(this.connections[i]);
+            ctx.lineWidth = 4;
             Utils.line(ctx, connection.x, connection.y, this.x, this.y, Utils.powerColor(this.powered));
         }
     }

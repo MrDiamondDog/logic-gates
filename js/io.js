@@ -24,25 +24,26 @@ class IO {
     getParentNode() {
         return Utils.GetNodeByUUID(this.parentNode);
     }
-    checkPower() {
-        for (let i = 0; i < this.connections.length; i++) {
-            const connection = Utils.GetIOByUUID(this.connections[i]);
-            connection.powered = this.powered;
-        }
-        if (this.isOutput)
-            return;
-        else {
-            this.powered = false;
-            for (let i = 0; i < this.backwardConnections.length; i++) {
-                if (Utils.GetIOByUUID(this.backwardConnections[i]).powered) {
-                    this.powered = true;
-                    break;
+    async update() {
+        return new Promise(async (resolve) => {
+            for (let i = 0; i < this.connections.length; i++) {
+                const connection = Utils.GetIOByUUID(this.connections[i]);
+                connection.powered = this.powered;
+                await connection.update();
+            }
+            if (this.isOutput)
+                resolve(0);
+            else {
+                this.powered = false;
+                for (let i = 0; i < this.backwardConnections.length; i++) {
+                    if (Utils.GetIOByUUID(this.backwardConnections[i]).powered) {
+                        this.powered = true;
+                        break;
+                    }
                 }
             }
-        }
-    }
-    update() {
-        this.checkPower();
+            resolve(1);
+        });
     }
     draw(ctx, x, y) {
         this.x = x;
@@ -50,6 +51,7 @@ class IO {
         Utils.circle(ctx, this.x, this.y, 5, Utils.powerColor(this.powered));
         for (let i = 0; i < this.connections.length; i++) {
             const connection = Utils.GetIOByUUID(this.connections[i]);
+            ctx.lineWidth = 4;
             Utils.line(ctx, connection.x, connection.y, this.x, this.y, Utils.powerColor(this.powered));
         }
     }
